@@ -8,190 +8,122 @@
 #include <cstring>
 #include <unistd.h>
 #include <fstream>
+#include <vector>
+#include <iostream>
+#include <iomanip> 
+#include <algorithm>
+#include <sstream>
+#include <stdlib.h>
+#include <time.h>
+
 
 using namespace std;
 
+vector <string> options={"-i","-ie","-oe","-n","-b","-d","-ee","-s","-q"};
+
 int main(int argc, char *argv[])
 {
-    if (strcmp(argv[1], "init") == 0)
-    {
-        if (argv[2] != NULL)
-        {
-            if (strcmp(argv[2],"-i") == 0)
-            {
-                if (argv[3] != NULL)
-                {
-                    cout << argv[1] << " " << argv[2] << " " << argv[3] << endl;
-                }
-            }
-            else if (strcmp(argv[2],"-ie") == 0)
-            {
-                if (argv[3] != NULL)
-                {
-                    cout << argv[1] << " " << argv[2] << " " << argv[3] << endl;
-                }
-            }
-            else if (strcmp(argv[2],"-oe") == 0)
-            {
-                if (argv[3] != NULL)
-                {
-                    cout << argv[1] << " " << argv[2] << " " << argv[3] << endl;
-                }
-            }
-            else if (strcmp(argv[2],"-n") == 0)
-            {
-                if (argv[3] != NULL)
-                {
-                    cout << argv[1] << " " << argv[2] << " " << argv[3] << endl;
-                }
-            }
-            else if (strcmp(argv[2],"-b") == 0)
-            {
-                if (argv[3] != NULL)
-                {
-                    cout << argv[1] << " " << argv[2] << " " << argv[3] << endl;
-                }
-            }
-            else if (strcmp(argv[2],"-d") == 0)
-            {
-                if (argv[3] != NULL)
-                {
-                    cout << argv[1] << " " << argv[2] << " " << argv[3] << endl;
-                }
-            }
-            else if (strcmp(argv[2],"-ee") == 0)
-            {
-                if (argv[3] != NULL)
-                {
-                    cout << argv[1] << " " << argv[2] << " " << argv[3] << endl;
-                }
-            }
-            else if (strcmp(argv[2],"-s") == 0)
-            {
-                if (argv[3] != NULL)
-                {
-                    cout << argv[1] << " " << argv[2] << " " << argv[3] << endl;
-                }
-            }
-            else if (strcmp(argv[2],"-q") == 0)
-            {
-                if (argv[3] != NULL)
-                {
-                    cout << argv[1] << " " << argv[2] << " " << argv[3] << endl;
-                }
-            }
-            else
-            {
-                cerr << "Argumento invalido" << endl;
+    int numentradas = 5,numeropos=6, entradasCola = 10, reactSangre = 100, reactDetritos = 100, reactPiel = 100, sizeInternas = 6; 
+    string nombreSeg;
+    nombreSeg = "evaluator";
+    
+    string command = argv[1];
+    if(command=="init"){
+        cout << "enter" << endl;
+        for (int i = 2; i < argc ;i++){
+            vector<string>::iterator tempo = find(options.begin(),options.end(),argv[i]);
+            if(tempo==options.end()){
+                cerr <<" Argumento invalido "<<endl;
                 exit(1);
             }
+            if(strcmp(argv[i],"-i")==0){
+                numentradas= stoi(argv[i+1]);            
+                cout << numentradas << endl; 
+                //options.erase(remove(options.begin(),options.end(),argv[i]),options.end());
+                i++;
+            }else if (strcmp(argv[i],"-ie")==0){
+                numeropos=stoi(argv[i+1]);
+                cout << numeropos << endl;
+                i++;
+            }else if (strcmp(argv[i],"-oe")==0){
+                entradasCola=stoi(argv[i+1]);
+                cout << entradasCola << endl;
+                i++;
+            }else if (strcmp(argv[i],"-n")==0){
+                nombreSeg=argv[i+1];
+                cout << nombreSeg << endl;
+                i++;
+            }else if (strcmp(argv[i],"-b")==0){
+                reactSangre=stoi(argv[i+1]);
+                cout << reactSangre << endl;
+                i++;
+            }else if (strcmp(argv[i],"-d")==0){
+                reactDetritos=stoi(argv[i+1]);
+                cout << reactDetritos << endl;
+                i++;
+            }else if (strcmp(argv[i],"-ee")==0){
+                
+            }else if (strcmp(argv[i],"-s")==0){
+                reactPiel=stoi(argv[i+1]);
+                cout << reactPiel << endl;
+                i++;
+            }else if (strcmp(argv[i],"-q")==0){
+                sizeInternas=stoi(argv[i+1]);
+                cout << sizeInternas << endl;
+                i++;
+            }
         }
-        else
-        {
-            cerr << "Se esperaban mas argumentos" << endl;
-            exit(1);
-        }
+    
     }
-    else if (strcmp(argv[1], "reg") == 0)
-    {
-        if (argv[2] != NULL)
-        {
-            if (strcmp(argv[2], "-n") == 0)
-            {
-                if (argv[3] != NULL)
-                {
-                    string memoriaCompartida = argv[3];
-                    cout << memoriaCompartida << endl;
-                    if (argv[4] != NULL)
-                    {
-                        ifstream archivoEval;
-                        archivoEval.open(argv[4]);
-                        if (!archivoEval && isdigit(argv[4][0]))
-                        {
-                            if (argv[5] != NULL)
-                            {
-                                if (strcmp(argv[5], "B") == 0)
-                                {
-                                    cout << "tipo" << argv[5] << endl;
-                                    if (argv[6] != NULL)
-                                    {
-                                        cout << argv[1] << " " << argv[2] << " " << argv[3] << " " << argv[4] << " " << argv[5] << " " << argv[6] << endl;
-                                    }
-                                }
-                                else if (strcmp(argv[5], "D") == 0)
-                                {
-                                    cout << "tipo" << argv[5] << endl;
-                                    if (argv[6] != NULL)
-                                    {
-                                        cout << argv[1] << " " << argv[2] << " " << argv[3] << " " << argv[4] << " " << argv[5] << " " << argv[6] << endl;
-                                    }
-                                }
-                                else if (strcmp(argv[5], "S") == 0)
-                                {
-                                    cout << "tipo" << argv[5] << endl;
-                                    if (argv[6] != NULL)
-                                    {
-                                        cout << argv[1] << " " << argv[2] << " " << argv[3] << " " << argv[4] << " " << argv[5] << " " << argv[6] << endl;
-                                    }
-                                }
-                                else
-                                {
-                                    cerr << "Argumento invalido" << endl;
-                                    exit(1);
-                                }
-                            }
-                        }
-                        else if (!archivoEval && !isdigit(argv[4][0]))
-                        {
-                            cerr << "Unable to open file";
-                            exit(1);
-                        }
-                        else if (archivoEval)
-                        {
-                            string comprobar = argv[4];
-                            if (comprobar.find(".extension") != std::string::npos)
-                            {
-                                string archivoEntrada = argv[4];
-                                int posicion = archivoEntrada.find_first_of(".");
-                                string nombreArchivo = archivoEntrada.substr(0, posicion);
-                                string archivoSample = nombreArchivo.append(".spl");
-                            }
-                        }
-                    }
-                }
-                else
-                {
-                    cerr << "Argumento invalido" << endl;
+    string nomsegmem,nomarchivo,contarchivo;
+    ifstream file;
+    ofstream file2;
+
+    if(command == "reg"){
+        int bandeja,totalexamenes,ident;
+        string tipomuestra;
+        for (int i = 4; i < argc ;i++){
+            if(strcmp(argv[2],"-n")==0){
+                nomsegmem= argv[3];
+                //cout << nomsegmem << endl;
+            }
+            
+            file.open(argv[i]);
+            nomarchivo = argv[i];
+            nomarchivo = nomarchivo.substr(0,nomarchivo.find("."));
+            string line;
+            while(getline(file,line)){
+                istringstream iss(line);
+                iss>>bandeja>>tipomuestra>>totalexamenes;
+                /*if(bandeja<0 and bandeja>numentradas){
+                    cerr << "Error en el numero de bandeja de entrada" << endl;
                     exit(1);
                 }
+                if(tipomuestra!="B" and tipomuestra!="D" and tipomuestra!="S"){
+                    cerr << "Error con el tipo de muestra" << endl;
+                    exit(1);
+                }
+                if(bandeja<0 and bandeja>numentradas){
+                    cerr << "Error con la cantidad de muestras" << endl;
+                    exit(1);
+                }*/
+                ident = rand();
+                
+                contarchivo = to_string(ident)+"\n";
             }
-            else
-            {
-                cerr << "Se esperaban mas argumentos" << endl;
-                exit(1);
-            }
-        }
-        else if (strcmp(argv[1], "ctrl") == 0)
-        {
-            if (argv[2] != NULL)
-            {
-            }
-            else
-            {
-                cerr << "Se esperaban mas argumentos" << endl;
-                exit(1);
-            }
-        }
-        else if (strcmp(argv[1], "rep") == 0)
-        {
-            if (argv[2] != NULL)
-            {
-            }
-            else
-            {
-                cerr << "Se esperaban mas argumentos" << endl;
-                exit(1);
-            }
-        }
+            file.close();
+            file2.open(nomarchivo+".spl");
+            file2 << contarchivo;
+            file2.close();
+
+        }   
     }
+
+    if(command == "ctrl"){
+
+    } 
+
+    if(command == "rep"){
+
+    }   
 }
