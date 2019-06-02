@@ -15,19 +15,21 @@
 #include <sstream>
 #include <stdlib.h>
 #include <time.h>
+#include <regex>
 
 
 using namespace std;
 
-vector <string> options={"-i","-ie","-oe","-n","-b","-d","-ee","-s","-q"};
-
 int main(int argc, char *argv[])
 {
-    int numentradas = 5,numeropos=6, entradasCola = 10, reactSangre = 100, reactDetritos = 100, reactPiel = 100, sizeInternas = 6; 
+    vector <string> options={"-i","-ie","-oe","-n","-b","-d","-ee","-s","-q"};
+    vector <int> ids;
+    int numentradas = 5,numeropos=6, entradasCola = 10, reactSangre = 100, 
+    reactDetritos = 100, reactPiel = 100, sizeInternas = 6; 
     string nombreSeg;
     nombreSeg = "evaluator";
-    
     string command = argv[1];
+
     if(command=="init"){
         cout << "enter" << endl;
         for (int i = 2; i < argc ;i++){
@@ -61,8 +63,6 @@ int main(int argc, char *argv[])
                 reactDetritos=stoi(argv[i+1]);
                 cout << reactDetritos << endl;
                 i++;
-            }else if (strcmp(argv[i],"-ee")==0){
-                
             }else if (strcmp(argv[i],"-s")==0){
                 reactPiel=stoi(argv[i+1]);
                 cout << reactPiel << endl;
@@ -73,57 +73,131 @@ int main(int argc, char *argv[])
                 i++;
             }
         }
-    
+            
     }
-    string nomsegmem,nomarchivo,contarchivo;
-    ifstream file;
-    ofstream file2;
 
     if(command == "reg"){
-        int bandeja,totalexamenes,ident;
-        string tipomuestra;
-        for (int i = 4; i < argc ;i++){
-            if(strcmp(argv[2],"-n")==0){
-                nomsegmem= argv[3];
-                //cout << nomsegmem << endl;
-            }
-            
-            file.open(argv[i]);
-            nomarchivo = argv[i];
-            nomarchivo = nomarchivo.substr(0,nomarchivo.find("."));
-            string line;
-            while(getline(file,line)){
-                istringstream iss(line);
-                iss>>bandeja>>tipomuestra>>totalexamenes;
-                /*if(bandeja<0 and bandeja>numentradas){
-                    cerr << "Error en el numero de bandeja de entrada" << endl;
-                    exit(1);
-                }
-                if(tipomuestra!="B" and tipomuestra!="D" and tipomuestra!="S"){
-                    cerr << "Error con el tipo de muestra" << endl;
-                    exit(1);
-                }
-                if(bandeja<0 and bandeja>numentradas){
-                    cerr << "Error con la cantidad de muestras" << endl;
-                    exit(1);
-                }*/
+        string nomsegmem,nomarchivo,contarchivo,tipomuestra;
+        ifstream file;
+        ofstream file2;
+        int bandeja, cantmuestra,ident,totalexamenes;
+        if(strcmp(argv[2],"-n")==0){
+            nomsegmem= argv[3];
+            //cout << nomsegmem << endl;
+        }
+        cout << "aca" << endl;
+        if(strcmp(argv[4], "-") == 0){
+            cout << "> ";
+            while(cin>>bandeja>>tipomuestra>>cantmuestra){
                 ident = rand();
-                
-                contarchivo = to_string(ident)+"\n";
+                vector<int>::iterator tempo = find(ids.begin(),ids.end(),ident);
+                while (tempo != ids.end()){
+                    vector<int>::iterator tempo = find(ids.begin(),ids.end(),ident);
+                    ident = rand();
+                }
+                ids.push_back(ident);
+                cout << ident << endl;
+                cout << "> ";
             }
-            file.close();
-            file2.open(nomarchivo+".spl");
-            file2 << contarchivo;
-            file2.close();
-
+        }
+        else {
+            for (int i = 4; i < argc ;i++){
+                file.open(argv[i]);
+                nomarchivo = argv[i];
+                nomarchivo = nomarchivo.substr(0,nomarchivo.find("."));
+                string line;
+                while(getline(file,line)){
+                    istringstream iss(line);
+                    iss>>bandeja>>tipomuestra>>totalexamenes;
+                    /*if(bandeja<0 and bandeja>numentradas){
+                        cerr << "Error en el numero de bandeja de entrada" << endl;
+                        exit(1);
+                    }
+                    if(tipomuestra!="B" and tipomuestra!="D" and tipomuestra!="S"){
+                        cerr << "Error con el tipo de muestra" << endl;
+                        exit(1);
+                    }
+                    if(bandeja<0 and bandeja>numentradas){
+                        cerr << "Error con la cantidad de muestras" << endl;
+                        exit(1);
+                    }*/
+                    ident = rand();
+                    
+                    contarchivo = to_string(ident)+"\n";
+                }
+                file.close();
+                file2.open("../examples/" + nomarchivo+".spl");
+                file2 << contarchivo;
+                file2.close();
+            }
         }   
     }
 
     if(command == "ctrl"){
-
+        string name,tmp,tipomuestra;
+        int valormuestra;
+        vector<string>temp;
+        if(strcmp(argv[2],"-n")==0){
+            name = argv[3];
+            cout <<"> ";
+            while(cin){
+                getline(cin, tmp);
+                regex ws_re("\\s+"); // whitespace
+                vector<string> result{
+                    sregex_token_iterator(tmp.begin(), tmp.end(), ws_re, -1), {}
+                };
+                for(int i = 0; i<result.size(); i++){ 
+                   if(result.at(i) == "list"){
+                       if(result.at(i+1) == "processing"){
+                           
+                       }
+                       else if(result.at(i+1) == "waiting"){
+                            
+                       } 
+                       else if(result.at(i+1) == "reported"){
+                            
+                       } 
+                       else if(result.at(i+1) == "reactive"){
+                            
+                       } 
+                       else if(result.at(i+1) == "all"){
+                            
+                       } 
+                    } 
+                   else if (result.at(i) == "update"){
+                        tipomuestra = result.at(i+1);
+                        valormuestra = stoi(result.at(i+2));
+                    }
+                }
+                cout <<"> ";
+            }
+        }
     } 
 
     if(command == "rep"){
-
-    }   
+        string name,opcion;
+        int valor,valorsleep;
+        if(strcmp(argv[2],"-n")==0){
+            name = argv[3];
+            cout << "> ";
+            while(cin >>opcion>>valor){
+                if(opcion == "-i"){
+                    valorsleep=valor;
+                    //para lo que tiene que esperar se hace 
+                    //sleep(rand()%valorsleep +1);
+                }
+                if(opcion == "-m"){
+                    //esperar hasta que el tamaño de la cola de examenes sea igual a valor
+                }
+                cout << "> ";
+            }
+        }
+    } 
+    if(command == "stop"){
+        string name;
+        if(strcmp(argv[2],"-n")==0){
+            name = argv[3];
+            //eliminar el segmento de memoria con el nombre name y parar el init
+        }
+    }  
 }

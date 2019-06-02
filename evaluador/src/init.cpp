@@ -6,6 +6,7 @@
 #include <sys/types.h>
 #include <semaphore.h>
 #include <iostream>
+#include "elements.h"
 #include <cstdlib>
 #include <cstring>
 
@@ -13,15 +14,44 @@ using namespace std;
 
 class Init{
     
-    int inicializar ( char* n ){
-        int mem = shm_open(n, O_RDWR | O_CREAT | O_EXCL, 0660);
+    int inicializar ( int i, int pos, int entradasCola, string nombreSeg, int reacSangre, int reactDetritos, int  reactPiel, int sizeInternas){
+        
+        sem_t *sangre = sem_open("Sangre", O_CREAT | O_EXCL, 0660, reacSangre);
+        sem_t *piel = sem_open("Piel", O_CREAT | O_EXCL, 0660, reactPiel);
+        sem_t *ditritos  = sem_open("Ditritos", O_CREAT | O_EXCL, 0660, reactDetritos);
+
+        int mem = shm_open(nombreSeg.c_str(), O_RDWR | O_CREAT | O_EXCL, 0660);
+
         if (mem < 0){
             cerr << "Error creando la memoria compartida: "
 	        << errno << strerror(errno) << endl;
             exit(1);
         }
 
-        //Truncate? 
+        if (ftruncate(mem, sizeof((i*pos)+entradasCola)) != 0){
+            cerr << "Error creando la memoria compartida: "
+	        << errno << strerror(errno) << endl;
+            exit(1);
+        }
+
+        void *dir;
+
+        if ((dir = mmap(NULL, sizeof(struct elemento), PROT_READ | PROT_WRITE, MAP_SHARED,
+                mem, 0)) == MAP_FAILED) {
+            cerr << "Error mapeando la memoria compartida: "
+            << errno << strerror(errno) << endl;
+            exit(1);
+        }
+
+        struct Buffer *pBuffer;
+        pBuffer->entra = 0;
+        pBuffer->sale = 0;
+        pBuffer->cantidad = 0;
+        pBuffer->tamano = 12;
+    
+        close(mem);
+
+        return EXIT_SUCCESS;
     }
 
 };
