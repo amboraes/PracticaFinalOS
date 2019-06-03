@@ -16,6 +16,10 @@
 #include <stdlib.h>
 #include <time.h>
 #include <regex>
+#include "init.cpp"
+#include "reg.cpp"
+#include "ctrl.cpp"
+#include "rep.cpp"
 
 
 using namespace std;
@@ -73,17 +77,21 @@ int main(int argc, char *argv[])
                 i++;
             }
         }
-            
+        Init init;
+        init.inicializar(numentradas,numeropos,entradasCola,nombreSeg,reactSangre,reactDetritos,reactPiel,sizeInternas);          
     }
 
     if(command == "reg"){
+        Reg reg;
         string nomsegmem,nomarchivo,contarchivo,tipomuestra;
         ifstream file;
         ofstream file2;
-        int bandeja, cantmuestra,ident,totalexamenes;
+        int bandeja, cantmuestra,ident;
         if(strcmp(argv[2],"-n")==0){
             nomsegmem= argv[3];
+            
             //cout << nomsegmem << endl;
+
         }
         cout << "aca" << endl;
         if(strcmp(argv[4], "-") == 0){
@@ -98,6 +106,7 @@ int main(int argc, char *argv[])
                 ids.push_back(ident);
                 cout << ident << endl;
                 cout << "> ";
+                reg.registrar(bandeja,tipomuestra,cantmuestra,ident);
             }
         }
         else {
@@ -108,7 +117,7 @@ int main(int argc, char *argv[])
                 string line;
                 while(getline(file,line)){
                     istringstream iss(line);
-                    iss>>bandeja>>tipomuestra>>totalexamenes;
+                    iss>>bandeja>>tipomuestra>>cantmuestra;
                     /*if(bandeja<0 and bandeja>numentradas){
                         cerr << "Error en el numero de bandeja de entrada" << endl;
                         exit(1);
@@ -124,16 +133,19 @@ int main(int argc, char *argv[])
                     ident = rand();
                     
                     contarchivo = to_string(ident)+"\n";
+                    reg.registrar(bandeja,tipomuestra,cantmuestra,ident);
                 }
                 file.close();
                 file2.open("../examples/" + nomarchivo+".spl");
                 file2 << contarchivo;
                 file2.close();
             }
+            
         }   
     }
 
     if(command == "ctrl"){
+        Ctrl ctrl;
         string name,tmp,tipomuestra;
         int valormuestra;
         vector<string>temp;
@@ -148,25 +160,27 @@ int main(int argc, char *argv[])
                 };
                 for(int i = 0; i<result.size(); i++){ 
                    if(result.at(i) == "list"){
+                       string resultado;
                        if(result.at(i+1) == "processing"){
-                           
+                           resultado = ctrl.procesando();
                        }
                        else if(result.at(i+1) == "waiting"){
-                            
+                            resultado = ctrl.esperando();
                        } 
                        else if(result.at(i+1) == "reported"){
-                            
+                            resultado = ctrl.reactivos();
                        } 
                        else if(result.at(i+1) == "reactive"){
-                            
+                            resultado = ctrl.reactivos();
                        } 
                        else if(result.at(i+1) == "all"){
-                            
+                            resultado = ctrl.all();
                        } 
                     } 
                    else if (result.at(i) == "update"){
                         tipomuestra = result.at(i+1);
                         valormuestra = stoi(result.at(i+2));
+                        ctrl.actualizar(tipomuestra,valormuestra);
                     }
                 }
                 cout <<"> ";

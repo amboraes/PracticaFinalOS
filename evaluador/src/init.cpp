@@ -7,14 +7,15 @@
 #include <semaphore.h>
 #include <iostream>
 #include "elements.h"
+#include "init.h"
 #include <cstdlib>
 #include <cstring>
 
 using namespace std; 
 
-class Init{
+
     
-    int inicializar ( int i, int pos, int entradasCola, string nombreSeg, int reacSangre, int reactDetritos, int  reactPiel, int sizeInternas){
+    void Init::inicializar ( int i, int pos, int entradasCola, string nombreSeg, int reacSangre, int reactDetritos, int  reactPiel, int sizeInternas){
         
         sem_t *sangre = sem_open("Sangre", O_CREAT | O_EXCL, 0660, reacSangre);
         sem_t *piel = sem_open("Piel", O_CREAT | O_EXCL, 0660, reactPiel);
@@ -28,7 +29,9 @@ class Init{
             exit(1);
         }
 
-        if (ftruncate(mem, sizeof((i*pos)+entradasCola)) != 0){
+        int j = ((sizeof(struct Entrada)*i*pos)+sizeof(struct Salida)+entradasCola);
+
+        if (ftruncate(mem, ((sizeof(struct Entrada)*i*pos)+sizeof(struct Salida)+entradasCola)) != 0){
             cerr << "Error creando la memoria compartida: "
 	        << errno << strerror(errno) << endl;
             exit(1);
@@ -36,22 +39,15 @@ class Init{
 
         void *dir;
 
-        if ((dir = mmap(NULL, sizeof(struct elemento), PROT_READ | PROT_WRITE, MAP_SHARED,
+        if ((dir = mmap(NULL, ((sizeof(struct Entrada)*i*pos)+sizeof(struct Salida)+entradasCola), PROT_READ | PROT_WRITE, MAP_SHARED,
                 mem, 0)) == MAP_FAILED) {
             cerr << "Error mapeando la memoria compartida: "
             << errno << strerror(errno) << endl;
             exit(1);
         }
 
-        struct Buffer *pBuffer;
-        pBuffer->entra = 0;
-        pBuffer->sale = 0;
-        pBuffer->cantidad = 0;
-        pBuffer->tamano = 12;
-    
         close(mem);
 
-        return EXIT_SUCCESS;
+        //return EXIT_SUCCESS;
     }
 
-};
