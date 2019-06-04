@@ -23,7 +23,6 @@ void Reg::registrar(string nomseg, int bandeja, string tipomuestra, int cantmues
 	    << errno << strerror(errno) << endl;
         exit(1);
     }
-
     void *dir;
 
     if ((dir = mmap(NULL, sizeof(struct Entrada), PROT_READ | PROT_WRITE, MAP_SHARED, mem, 0)) == MAP_FAILED) {
@@ -38,5 +37,7 @@ void Reg::registrar(string nomseg, int bandeja, string tipomuestra, int cantmues
     entrada->cantidad = cantmuestra;
     entrada->tipo = *aux;
     entrada->ident = ident;
-    cout << dir << " " << entrada->bandEntrada << endl;
+    cout << dir << endl;
+    memcpy(dir, &entrada, sizeof(struct Entrada));
+    //cout << dir << " " << entrada->bandEntrada << endl;
 }

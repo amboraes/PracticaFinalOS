@@ -8,5 +8,14 @@ struct Entrada {
   int ident;
 };
 
-struct Salida {};
-ida {};
+struct Salida {
+  int tamano;
+  struct  Entrada examenes[];
+  
+};
+
+struct Cola{
+  int tamano;
+  int cantidad;
+  struct  Entrada examenes[];  
+};

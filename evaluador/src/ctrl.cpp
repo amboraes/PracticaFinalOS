@@ -23,6 +23,21 @@ string Ctrl::procesando(string nomseg){
 	    << errno << strerror(errno) << endl;
         exit(1);
     }
+    void *dir;
+
+    if ((dir = mmap(NULL, sizeof(struct Entrada), PROT_READ | PROT_WRITE, MAP_SHARED, mem, 0)) == MAP_FAILED) {
+        cerr << "Error mapeando la memoria compartida: "
+        << errno << strerror(errno) << endl;
+        exit(1);
+    }
+
+    struct Entrada *entrada = (struct Entrada* ) dir;
+    for (int i = 0; i < 10; i++)
+    {
+        cout << "entro al processing" << endl;
+        cout << entrada << endl;
+    }
+    
 }
 string Ctrl::esperando(string nomseg){
     int mem = shm_open(nomseg.c_str(), O_RDWR, 0660);
