@@ -170,19 +170,19 @@ int main(int argc, char *argv[])
                    if(result.at(i) == "list"){
                        string resultado;
                        if(result.at(i+1) == "processing"){
-                           resultado = ctrl.procesando(name);
+                           resultado = ctrl.procesando(name,numentradas,numeropos,entradasCola);
                        }
                        else if(result.at(i+1) == "waiting"){
-                            resultado = ctrl.esperando(name);
+                            resultado = ctrl.esperando(name,numentradas,numeropos,entradasCola);
                        }
                        else if(result.at(i+1) == "reported"){
-                            resultado = ctrl.reactivos(name);
+                            resultado = ctrl.reactivos(name,numentradas,numeropos,entradasCola);
                        }
                        else if(result.at(i+1) == "reactive"){
-                            resultado = ctrl.reactivos(name);
+                            resultado = ctrl.reactivos(name,numentradas,numeropos,entradasCola);
                        }
                        else if(result.at(i+1) == "all"){
-                            resultado = ctrl.all(name);
+                            resultado = ctrl.all(name,numentradas,numeropos,entradasCola);
                        }
                     }
                    else if (result.at(i) == "update"){

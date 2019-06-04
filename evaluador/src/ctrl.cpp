@@ -14,7 +14,9 @@
 using namespace std;
 
 
-string Ctrl::procesando(string nomseg){
+string Ctrl::procesando(string nomseg, int i, int ie, int oe){
+    int n = 0;
+    int m = 0;
     string open = "/" + nomseg;
     int mem = shm_open(open.c_str(), O_RDWR, 0660);
     //int shmID;
@@ -24,23 +26,37 @@ string Ctrl::procesando(string nomseg){
 	    << errno << strerror(errno) << endl;
         exit(1);
     }
-    void *dir;
 
-    if ((dir = mmap(NULL, sizeof(struct Entrada), PROT_READ | PROT_WRITE, MAP_SHARED, mem, 0)) == MAP_FAILED) {
+    int *dir;
+
+    if ((dir = (int *)mmap(NULL, ((sizeof(struct Entrada)*i*ie)+sizeof(struct Salida)+oe), PROT_READ | PROT_WRITE, MAP_SHARED, mem, 0)) == MAP_FAILED) {
         cerr << "Error mapeando la memoria compartida: "
         << errno << strerror(errno) << endl;
         exit(1);
     }
-
-    struct Entrada *entrada = (struct Entrada* ) dir;
-    for (int i = 0; i < 10; i++)
-    {
-        cout << "entro al processing" << endl;
-        cout << entrada << endl;
+    int *pos0 = dir;
+    //cout << dir << endl;
+    while(n < i){
+        //cout << "n " << n << " i " << i << endl;  
+        int *posI = (n*ie*sizeof(struct Entrada)) + dir;
+        m = 0;
+        //cout << "posI " << posI << endl; 
+        while ( m < ie)
+        {
+            //cout << "m " << m << " ie " << ie << endl;
+            int *posn = posI + (m * sizeof(struct Entrada));
+            //cout << "posn " << posn << endl;
+            struct Entrada *pRegistro = (struct Entrada *) posn;
+            cout<<pRegistro->tipo<<endl;
+            m++;
+        }
+        n++;
     }
+    cout << "salio del while" << endl;
+    return "algo";
     
 }
-string Ctrl::esperando(string nomseg){
+string Ctrl::esperando(string nomseg, int i, int ie, int oe){
     string open = "/" + nomseg;
     int mem = shm_open(open.c_str(), O_RDWR, 0660);
     //int shmID;
@@ -51,7 +67,7 @@ string Ctrl::esperando(string nomseg){
         exit(1);
     }
 }
-string Ctrl::terminados(string nomseg){
+string Ctrl::terminados(string nomseg, int i, int ie, int oe){
     string open = "/" + nomseg;
     int mem = shm_open(open.c_str(), O_RDWR, 0660);
     //int shmID;
@@ -62,7 +78,7 @@ string Ctrl::terminados(string nomseg){
         exit(1);
     }
 }
-string Ctrl::reactivos(string nomseg){
+string Ctrl::reactivos(string nomseg, int i, int ie, int oe){
     string open = "/" + nomseg;
     int mem = shm_open(open.c_str(), O_RDWR, 0660);
     //int shmID;
@@ -73,7 +89,7 @@ string Ctrl::reactivos(string nomseg){
         exit(1);
     }
 }
-string Ctrl::all(string nomseg){
+string Ctrl::all(string nomseg, int i, int ie, int oe){
     string open = "/" + nomseg;
     int mem = shm_open(open.c_str(), O_RDWR, 0660);
     //int shmID;

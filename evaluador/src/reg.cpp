@@ -26,35 +26,38 @@ void Reg::registrar(string nomseg, int bandeja, char tipomuestra, int cantmuestr
     }
 
     int *dir;
-
-    struct Entrada *entrada;
-    entrada->bandEntrada = bandeja;
-    entrada->cantidad = cantmuestra;
-    entrada->tipo = tipomuestra;
-    entrada->ident = ident;
-
+    
+    struct Entrada entrada;
+    entrada.bandEntrada = bandeja;
+    entrada.cantidad = cantmuestra;
+    entrada.tipo = tipomuestra;
+    entrada.ident = ident;
+    
     if ((dir = (int *)mmap(NULL, ((sizeof(struct Entrada)*i*ie)+sizeof(struct Salida)+oe), PROT_READ | PROT_WRITE, MAP_SHARED, mem, 0)) == MAP_FAILED) {
         cerr << "Error mapeando la memoria compartida: "
         << errno << strerror(errno) << endl;
         exit(1);
     }
-
     int *pos0 = dir;
-    int *posI = (i*ie*sizeof(struct Entrada)) + dir;
-    
-    for (;;)
-    {
+    //cout << dir << endl;
+    int *posI = (bandeja*ie*sizeof(struct Entrada)) + dir;
+    //cout << "posI " << posI << endl;
+    for(;;){ 
         while (!enter)
         {
+            
             while(n < ie){
                 int *posn = posI + (n * sizeof(struct Entrada));
                 struct Entrada *pRegistro = (struct Entrada *) posn;
+                //cout << "posn " << posn << endl;
                 if(pRegistro->cantidad <= 0){
-                    pRegistro->bandEntrada = entrada->bandEntrada;
-                    pRegistro->cantidad = entrada->cantidad;
-                    pRegistro->ident = entrada->ident;
-                    pRegistro->tipo = entrada->tipo;
+                    cout << "entro al if de registro" << endl;
+                    pRegistro->bandEntrada = entrada.bandEntrada;
+                    pRegistro->cantidad = entrada.cantidad;
+                    pRegistro->ident = entrada.ident;
+                    pRegistro->tipo = entrada.tipo;
                     enter = true;
+                    //cout <<pRegistro->tipo<<endl;
                     break;
                 }
                 else{
@@ -65,9 +68,10 @@ void Reg::registrar(string nomseg, int bandeja, char tipomuestra, int cantmuestr
             if(n >= ie && !enter){
                 cout << "Registro está lleno" << endl;
                 sleep(5);
-                
+                n = 0;
             }
         }
+        break;
     }
     
 }

@@ -39,19 +39,19 @@ using namespace std;
         
         void *dir;
 
-        if ((dir = mmap(NULL, sizeof(struct Entrada), PROT_READ | PROT_WRITE, MAP_SHARED,
+        if ((dir = mmap(NULL, ((sizeof(struct Entrada)*i*pos)+sizeof(struct Salida)+entradasCola), PROT_READ | PROT_WRITE, MAP_SHARED,
                 mem, 0)) == MAP_FAILED) {
             cerr << "Error mapeando la memoria compartida: "
             << errno << strerror(errno) << endl;
             exit(1);
         }
-        //cout << dir << endl;
-        struct Entrada *entrada = (struct Entrada *) dir;
+        cout << dir << endl;
+        /*struct Entrada *entrada = (struct Entrada *) dir;
         entrada->bandEntrada=0;
         entrada->cantidad=0;
         entrada->ident=0;
-        entrada->tipo=' ';
-        close(mem);
+        entrada->tipo=' ';*/
+        //close(mem);
 
         //return dir;
         //return EXIT_SUCCESS;*/
