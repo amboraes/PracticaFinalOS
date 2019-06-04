@@ -1,4 +1,5 @@
 #pragma once
+#include <cstring>
 
 struct Entrada {
   int bandEntrada;
@@ -8,3 +9,4 @@ struct Entrada {
 };
 
 struct Salida {};
+ida {};

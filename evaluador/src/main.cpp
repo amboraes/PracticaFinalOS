@@ -10,26 +10,30 @@
 #include <fstream>
 #include <vector>
 #include <iostream>
-#include <iomanip> 
+#include <iomanip>
 #include <algorithm>
 #include <sstream>
 #include <stdlib.h>
 #include <time.h>
 #include <regex>
-#include "init.cpp"
-#include "reg.cpp"
-#include "ctrl.cpp"
-#include "rep.cpp"
+#include <map>
+#include "init.h"
+#include "reg.h"
+#include "ctrl.h"
+#include "rep.h"
+#include "stop.h"
 
 
 using namespace std;
 
 int main(int argc, char *argv[])
 {
+    //void *dir;
+    map<string, int> idMemSeg;
     vector <string> options={"-i","-ie","-oe","-n","-b","-d","-ee","-s","-q"};
     vector <int> ids;
-    int numentradas = 5,numeropos=6, entradasCola = 10, reactSangre = 100, 
-    reactDetritos = 100, reactPiel = 100, sizeInternas = 6; 
+    int numentradas = 5,numeropos=6, entradasCola = 10, reactSangre = 100,
+    reactDetritos = 100, reactPiel = 100, sizeInternas = 6;
     string nombreSeg;
     nombreSeg = "evaluator";
     string command = argv[1];
@@ -43,8 +47,8 @@ int main(int argc, char *argv[])
                 exit(1);
             }
             if(strcmp(argv[i],"-i")==0){
-                numentradas= stoi(argv[i+1]);            
-                cout << numentradas << endl; 
+                numentradas= stoi(argv[i+1]);
+                cout << numentradas << endl;
                 //options.erase(remove(options.begin(),options.end(),argv[i]),options.end());
                 i++;
             }else if (strcmp(argv[i],"-ie")==0){
@@ -78,7 +82,7 @@ int main(int argc, char *argv[])
             }
         }
         Init init;
-        init.inicializar(numentradas,numeropos,entradasCola,nombreSeg,reactSangre,reactDetritos,reactPiel,sizeInternas);          
+        init.inicializar(numentradas,numeropos,entradasCola,nombreSeg,reactSangre,reactDetritos,reactPiel,sizeInternas);
     }
 
     if(command == "reg"){
@@ -89,7 +93,7 @@ int main(int argc, char *argv[])
         int bandeja, cantmuestra,ident;
         if(strcmp(argv[2],"-n")==0){
             nomsegmem= argv[3];
-            
+
             //cout << nomsegmem << endl;
 
         }
@@ -98,18 +102,21 @@ int main(int argc, char *argv[])
             cout << "> ";
             while(cin>>bandeja>>tipomuestra>>cantmuestra){
                 ident = rand();
-                vector<int>::iterator tempo = find(ids.begin(),ids.end(),ident);
-                while (tempo != ids.end()){
+                if(tipomuestra== "B" or tipomuestra== "D" or tipomuestra== "S"){
                     vector<int>::iterator tempo = find(ids.begin(),ids.end(),ident);
-                    ident = rand();
+                    while (tempo != ids.end()){
+                        vector<int>::iterator tempo = find(ids.begin(),ids.end(),ident);
+                        ident = rand();
+                    }
+                    ids.push_back(ident);
+                    cout << ident << endl;
+                    reg.registrar(nomsegmem,bandeja,tipomuestra,cantmuestra,ident,numeropos);
+                    cout << "> ";
+                }else{
+                    cout << ">";
                 }
-                ids.push_back(ident);
-                cout << ident << endl;
-                cout << "> ";
-                reg.registrar(bandeja,tipomuestra,cantmuestra,ident);
             }
-        }
-        else {
+        }else {
             for (int i = 4; i < argc ;i++){
                 file.open(argv[i]);
                 nomarchivo = argv[i];
@@ -131,21 +138,22 @@ int main(int argc, char *argv[])
                         exit(1);
                     }*/
                     ident = rand();
-                    
+
                     contarchivo = to_string(ident)+"\n";
-                    reg.registrar(bandeja,tipomuestra,cantmuestra,ident);
+                    reg.registrar(nomsegmem,bandeja,tipomuestra,cantmuestra,ident,numeropos);
                 }
                 file.close();
                 file2.open("../examples/" + nomarchivo+".spl");
                 file2 << contarchivo;
                 file2.close();
             }
-            
-        }   
+
+        }
     }
 
     if(command == "ctrl"){
         Ctrl ctrl;
+
         string name,tmp,tipomuestra;
         int valormuestra;
         vector<string>temp;
@@ -158,25 +166,25 @@ int main(int argc, char *argv[])
                 vector<string> result{
                     sregex_token_iterator(tmp.begin(), tmp.end(), ws_re, -1), {}
                 };
-                for(int i = 0; i<result.size(); i++){ 
+                for(int i = 0; i<result.size(); i++){
                    if(result.at(i) == "list"){
                        string resultado;
                        if(result.at(i+1) == "processing"){
-                           resultado = ctrl.procesando();
+                           resultado = ctrl.procesando(name);
                        }
                        else if(result.at(i+1) == "waiting"){
-                            resultado = ctrl.esperando();
-                       } 
+                            resultado = ctrl.esperando(name);
+                       }
                        else if(result.at(i+1) == "reported"){
-                            resultado = ctrl.reactivos();
-                       } 
+                            resultado = ctrl.reactivos(name);
+                       }
                        else if(result.at(i+1) == "reactive"){
-                            resultado = ctrl.reactivos();
-                       } 
+                            resultado = ctrl.reactivos(name);
+                       }
                        else if(result.at(i+1) == "all"){
-                            resultado = ctrl.all();
-                       } 
-                    } 
+                            resultado = ctrl.all(name);
+                       }
+                    }
                    else if (result.at(i) == "update"){
                         tipomuestra = result.at(i+1);
                         valormuestra = stoi(result.at(i+2));
@@ -186,7 +194,7 @@ int main(int argc, char *argv[])
                 cout <<"> ";
             }
         }
-    } 
+    }
 
     if(command == "rep"){
         string name,opcion;
@@ -197,7 +205,7 @@ int main(int argc, char *argv[])
             while(cin >>opcion>>valor){
                 if(opcion == "-i"){
                     valorsleep=valor;
-                    //para lo que tiene que esperar se hace 
+                    //para lo que tiene que esperar se hace
                     //sleep(rand()%valorsleep +1);
                 }
                 if(opcion == "-m"){
@@ -206,12 +214,13 @@ int main(int argc, char *argv[])
                 cout << "> ";
             }
         }
-    } 
+    }
     if(command == "stop"){
         string name;
+        Stop stop;
         if(strcmp(argv[2],"-n")==0){
             name = argv[3];
-            //eliminar el segmento de memoria con el nombre name y parar el init
+            stop.borrar(name);
         }
-    }  
+    }
 }
