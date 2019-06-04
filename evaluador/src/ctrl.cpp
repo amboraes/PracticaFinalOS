@@ -15,7 +15,8 @@ using namespace std;
 
 
 string Ctrl::procesando(string nomseg){
-    int mem = shm_open(nomseg.c_str(), O_RDWR, 0660);
+    string open = "/" + nomseg;
+    int mem = shm_open(open.c_str(), O_RDWR, 0660);
     //int shmID;
     //shmID = shmget(,0);
     if (mem < 0){
@@ -40,7 +41,8 @@ string Ctrl::procesando(string nomseg){
     
 }
 string Ctrl::esperando(string nomseg){
-    int mem = shm_open(nomseg.c_str(), O_RDWR, 0660);
+    string open = "/" + nomseg;
+    int mem = shm_open(open.c_str(), O_RDWR, 0660);
     //int shmID;
     //shmID = shmget(,0);
     if (mem < 0){
@@ -50,7 +52,8 @@ string Ctrl::esperando(string nomseg){
     }
 }
 string Ctrl::terminados(string nomseg){
-    int mem = shm_open(nomseg.c_str(), O_RDWR, 0660);
+    string open = "/" + nomseg;
+    int mem = shm_open(open.c_str(), O_RDWR, 0660);
     //int shmID;
     //shmID = shmget(,0);
     if (mem < 0){
@@ -60,7 +63,8 @@ string Ctrl::terminados(string nomseg){
     }
 }
 string Ctrl::reactivos(string nomseg){
-    int mem = shm_open(nomseg.c_str(), O_RDWR, 0660);
+    string open = "/" + nomseg;
+    int mem = shm_open(open.c_str(), O_RDWR, 0660);
     //int shmID;
     //shmID = shmget(,0);
     if (mem < 0){
@@ -70,7 +74,8 @@ string Ctrl::reactivos(string nomseg){
     }
 }
 string Ctrl::all(string nomseg){
-   int mem = shm_open(nomseg.c_str(), O_RDWR, 0660);
+    string open = "/" + nomseg;
+    int mem = shm_open(open.c_str(), O_RDWR, 0660);
     //int shmID;
     //shmID = shmget(,0);
     if (mem < 0){

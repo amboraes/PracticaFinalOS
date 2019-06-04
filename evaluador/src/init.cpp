@@ -37,7 +37,7 @@ using namespace std;
             exit(1);
         }
         
-        /*void *dir;
+        void *dir;
 
         if ((dir = mmap(NULL, sizeof(struct Entrada), PROT_READ | PROT_WRITE, MAP_SHARED,
                 mem, 0)) == MAP_FAILED) {
@@ -45,8 +45,12 @@ using namespace std;
             << errno << strerror(errno) << endl;
             exit(1);
         }
-        cout << dir << endl;
-
+        //cout << dir << endl;
+        struct Entrada *entrada = (struct Entrada *) dir;
+        entrada->bandEntrada=0;
+        entrada->cantidad=0;
+        entrada->ident=0;
+        entrada->tipo=' ';
         close(mem);
 
         //return dir;

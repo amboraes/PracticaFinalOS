@@ -13,30 +13,61 @@
 
 using namespace std;
 
-void Reg::registrar(string nomseg, int bandeja, char tipomuestra, int cantmuestra, int ident, int ie){
-    int mem = shm_open(nomseg.c_str(), O_RDWR, 0660);
-    //cout << (int *)mem++ << endl;
-    //int shmID;
-    //shmID = shmget(,0);
+void Reg::registrar(string nomseg, int bandeja, char tipomuestra, int cantmuestra, int ident, int i, int ie, int oe){
+    string open = "/" + nomseg;
+    bool enter = false;
+    int n = 0;
+
+    int mem = shm_open(open.c_str(), O_RDWR, 0660);
     if (mem < 0){
         cerr << "Error abriendo la memoria compartida: "
 	    << errno << strerror(errno) << endl;
         exit(1);
     }
-    void *dir;
 
-    if ((dir = mmap(NULL, sizeof(struct Entrada), PROT_READ | PROT_WRITE, MAP_SHARED, mem, 0)) == MAP_FAILED) {
+    int *dir;
+
+    struct Entrada *entrada;
+    entrada->bandEntrada = bandeja;
+    entrada->cantidad = cantmuestra;
+    entrada->tipo = tipomuestra;
+    entrada->ident = ident;
+
+    if ((dir = (int *)mmap(NULL, ((sizeof(struct Entrada)*i*ie)+sizeof(struct Salida)+oe), PROT_READ | PROT_WRITE, MAP_SHARED, mem, 0)) == MAP_FAILED) {
         cerr << "Error mapeando la memoria compartida: "
         << errno << strerror(errno) << endl;
         exit(1);
     }
 
-    struct Entrada *entrada = (struct Entrada* ) dir;
-    entrada->bandEntrada = bandeja;
-    entrada->cantidad = cantmuestra;
-    entrada->tipo = tipomuestra;
-    entrada->ident = ident;
-    cout << dir << endl;
-    memcpy(dir, &entrada, sizeof(struct Entrada));
-    //cout << dir << " " << entrada->bandEntrada << endl;
+    int *pos0 = dir;
+    int *posI = (i*ie*sizeof(struct Entrada)) + dir;
+    
+    for (;;)
+    {
+        while (!enter)
+        {
+            while(n < ie){
+                int *posn = posI + (n * sizeof(struct Entrada));
+                struct Entrada *pRegistro = (struct Entrada *) posn;
+                if(pRegistro->cantidad <= 0){
+                    pRegistro->bandEntrada = entrada->bandEntrada;
+                    pRegistro->cantidad = entrada->cantidad;
+                    pRegistro->ident = entrada->ident;
+                    pRegistro->tipo = entrada->tipo;
+                    enter = true;
+                    break;
+                }
+                else{
+                    n++;
+                }
+            }
+
+            if(n >= ie && !enter){
+                cout << "Registro está lleno" << endl;
+                sleep(5);
+                
+            }
+        }
+    }
+    
 }
