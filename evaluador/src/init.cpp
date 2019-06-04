@@ -17,8 +17,7 @@
 
 using namespace std;
 
-    void Init::inicializar (int i, int pos, int entradasCola, string nombreSeg,
-                 int reacSangre, int reactDetritos, int  reactPiel, int sizeInternas){
+    void Init::inicializar (int i, int pos, int entradasCola, string nombreSeg,int reacSangre, int reactDetritos, int  reactPiel, int sizeInternas){
 
         sem_t *sangre = sem_open("Sangre", O_CREAT | O_EXCL, 0660, reacSangre);
         sem_t *piel = sem_open("Piel", O_CREAT | O_EXCL, 0660, reactPiel);

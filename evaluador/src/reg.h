@@ -6,5 +6,5 @@ using namespace std;
 
 class Reg {
 public:
-    void registrar(string nomseg, int bandeja, string tipomuestra, int cantmuestra, int ident, int ie);
+    void registrar(string nomseg, int bandeja, char tipomuestra, int cantmuestra, int ident, int ie);
 };

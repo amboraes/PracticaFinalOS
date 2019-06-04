@@ -14,8 +14,3 @@ struct Salida {
   
 };
 
-struct Cola{
-  int tamano;
-  int cantidad;
-  struct  Entrada examenes[];  
-};

@@ -13,7 +13,7 @@
 
 using namespace std;
 
-void Reg::registrar(string nomseg, int bandeja, string tipomuestra, int cantmuestra, int ident, int ie){
+void Reg::registrar(string nomseg, int bandeja, char tipomuestra, int cantmuestra, int ident, int ie){
     int mem = shm_open(nomseg.c_str(), O_RDWR, 0660);
     //cout << (int *)mem++ << endl;
     //int shmID;
@@ -31,11 +31,10 @@ void Reg::registrar(string nomseg, int bandeja, string tipomuestra, int cantmues
         exit(1);
     }
 
-    const char *aux = tipomuestra.c_str();
     struct Entrada *entrada = (struct Entrada* ) dir;
     entrada->bandEntrada = bandeja;
     entrada->cantidad = cantmuestra;
-    entrada->tipo = *aux;
+    entrada->tipo = tipomuestra;
     entrada->ident = ident;
     cout << dir << endl;
     memcpy(dir, &entrada, sizeof(struct Entrada));

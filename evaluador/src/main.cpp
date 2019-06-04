@@ -110,7 +110,7 @@ int main(int argc, char *argv[])
                     }
                     ids.push_back(ident);
                     cout << ident << endl;
-                    reg.registrar(nomsegmem,bandeja,tipomuestra,cantmuestra,ident,numeropos);
+                    reg.registrar(nomsegmem,bandeja,*tipomuestra.c_str(),cantmuestra,ident,numeropos);
                     cout << "> ";
                 }else{
                     cout << ">";
@@ -140,7 +140,7 @@ int main(int argc, char *argv[])
                     ident = rand();
 
                     contarchivo = to_string(ident)+"\n";
-                    reg.registrar(nomsegmem,bandeja,tipomuestra,cantmuestra,ident,numeropos);
+                    reg.registrar(nomsegmem,bandeja,*tipomuestra.c_str(),cantmuestra,ident,numeropos);
                 }
                 file.close();
                 file2.open("../examples/" + nomarchivo+".spl");
