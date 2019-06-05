@@ -10,9 +10,19 @@
 using namespace std;
 
 void Stop::borrar(string memseg){
-    sem_unlink("Sangre");
-    sem_unlink("Piel");
-    sem_unlink("Ditritos");
-    shm_unlink('/'+memseg.c_str());
-    shm_unlink(memseg.c_str());
+    string open = "/" + memseg;
+    string nombreSemaforoLlenos = memseg + "Llenos";
+    string nombreSemaforoVacios = memseg + "Vacios";
+    string nombreSemaforoMutex = memseg + "Mutex";
+    string nombreSemaforoSangre = memseg + "Sangre";
+    string nombreSemaforoPiel = memseg + "Piel";
+    string nombreSemaforoDitritos = memseg + "Ditritos";
+
+    sem_unlink(nombreSemaforoLlenos.c_str());
+    sem_unlink(nombreSemaforoVacios.c_str());
+    sem_unlink(nombreSemaforoMutex.c_str());
+    sem_unlink(nombreSemaforoSangre.c_str());
+    sem_unlink(nombreSemaforoPiel.c_str());
+    sem_unlink(nombreSemaforoDitritos.c_str());
+    shm_unlink(open.c_str());
 }

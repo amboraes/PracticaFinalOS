@@ -10,7 +10,15 @@ struct Entrada {
 
 struct Salida {
   int tamano;
-  struct  Entrada examenes[];
-  
 };
 
+struct Header {
+  int i;
+  int ie;
+  int oe;
+  int q;
+  int s;
+  int b;
+  int d;
+  char name[30];
+};

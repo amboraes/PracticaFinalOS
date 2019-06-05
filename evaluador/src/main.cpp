@@ -22,6 +22,7 @@
 #include "ctrl.h"
 #include "rep.h"
 #include "stop.h"
+#include "procesando.h"
 
 
 using namespace std;
@@ -29,13 +30,13 @@ using namespace std;
 int main(int argc, char *argv[])
 {
     //void *dir;
+    Procesando procesar;
     map<string, int> idMemSeg;
     vector <string> options={"-i","-ie","-oe","-n","-b","-d","-ee","-s","-q"};
     vector <int> ids;
     int numentradas = 5,numeropos=6, entradasCola = 10, reactSangre = 100,
     reactDetritos = 100, reactPiel = 100, sizeInternas = 6;
-    string nombreSeg;
-    nombreSeg = "evaluator";
+    string nombreSeg = "evaluator";
     string command = argv[1];
 
     if(command=="init"){
@@ -97,12 +98,12 @@ int main(int argc, char *argv[])
             //cout << nomsegmem << endl;
 
         }
-        cout << "aca" << endl;
+        //cout << "aca" << endl;
         if(strcmp(argv[4], "-") == 0){
             cout << "> ";
             while(cin>>bandeja>>tipomuestra>>cantmuestra){
                 ident = rand();
-                if(tipomuestra== "B" or tipomuestra== "D" or tipomuestra== "S"){
+                if(tipomuestra== "B" or tipomuestra== "D" or tipomuestra== "S" && (0<cantmuestra<=5)){
                     vector<int>::iterator tempo = find(ids.begin(),ids.end(),ident);
                     while (tempo != ids.end()){
                         vector<int>::iterator tempo = find(ids.begin(),ids.end(),ident);
@@ -110,12 +111,18 @@ int main(int argc, char *argv[])
                     }
                     ids.push_back(ident);
                     cout << ident << endl;
-                    reg.registrar(nomsegmem,bandeja,*tipomuestra.c_str(),cantmuestra,ident,numentradas,numeropos,entradasCola);
+                    reg.registrar(nomsegmem,bandeja,*tipomuestra.c_str(),cantmuestra,ident);
+                    procesar.procesar(nomsegmem);
+
                     cout << "> ";
                 }else{
                     cout << ">";
                 }
             }
+            //printf("antes de llamar procesar");
+            //cout << &procesar << " espacio x2 " << endl;
+            
+            //cout << procesar.sangre.size() << endl;
         }else {
             for (int i = 4; i < argc ;i++){
                 file.open(argv[i]);
@@ -138,9 +145,9 @@ int main(int argc, char *argv[])
                         exit(1);
                     }*/
                     ident = rand();
-
-                    contarchivo = to_string(ident)+"\n";
-                    reg.registrar(nomsegmem,bandeja,*tipomuestra.c_str(),cantmuestra,ident,numentradas,numeropos,entradasCola);
+                    cout << ident << endl;
+                    contarchivo += to_string(ident)+"\n";
+                    reg.registrar(nomsegmem,bandeja,*tipomuestra.c_str(),cantmuestra,ident);
                 }
                 file.close();
                 file2.open("../examples/" + nomarchivo+".spl");
@@ -152,8 +159,8 @@ int main(int argc, char *argv[])
     }
 
     if(command == "ctrl"){
+       // cout << "antes de instanciar ctrl " << procesar.sangre.size()<< endl;
         Ctrl ctrl;
-
         string name,tmp,tipomuestra;
         int valormuestra;
         vector<string>temp;
@@ -170,19 +177,21 @@ int main(int argc, char *argv[])
                    if(result.at(i) == "list"){
                        string resultado;
                        if(result.at(i+1) == "processing"){
-                           resultado = ctrl.procesando(name,numentradas,numeropos,entradasCola);
+                           cout << procesar.sangre.size()<< endl;
+                           resultado = ctrl.procesando(name,procesar);
+                           
                        }
                        else if(result.at(i+1) == "waiting"){
-                            resultado = ctrl.esperando(name,numentradas,numeropos,entradasCola);
+                            resultado = ctrl.esperando(name);
                        }
                        else if(result.at(i+1) == "reported"){
-                            resultado = ctrl.reactivos(name,numentradas,numeropos,entradasCola);
+                            resultado = ctrl.reactivos(name);
                        }
                        else if(result.at(i+1) == "reactive"){
-                            resultado = ctrl.reactivos(name,numentradas,numeropos,entradasCola);
+                            resultado = ctrl.reactivos(name);
                        }
                        else if(result.at(i+1) == "all"){
-                            resultado = ctrl.all(name,numentradas,numeropos,entradasCola);
+                            resultado = ctrl.all(name);
                        }
                     }
                    else if (result.at(i) == "update"){

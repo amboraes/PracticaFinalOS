@@ -10,41 +10,57 @@
 #include "elements.h"
 #include <string>
 #include "ctrl.h"
+#include "procesando.h"
 
 using namespace std;
 
 
-string Ctrl::procesando(string nomseg, int i, int ie, int oe){
+string Ctrl::procesando(string nomseg,Procesando proces){    
+    //printf("jueputa");
+    cout << &proces << endl;
+    return proces.procesando();
+}
+
+string Ctrl::esperando(string nomseg){
     int n = 0;
     int m = 0;
+    int i, ie, oe, q;
     string open = "/" + nomseg;
+
     int mem = shm_open(open.c_str(), O_RDWR, 0660);
-    //int shmID;
-    //shmID = shmget(,0);
+    
     if (mem < 0){
         cerr << "Error abriendo la memoria compartida: "
 	    << errno << strerror(errno) << endl;
         exit(1);
     }
 
-    int *dir;
+    struct Header *header =(struct Header *) mmap(NULL, sizeof(struct Header), PROT_READ | PROT_WRITE, MAP_SHARED, mem, 0);
+    i = header->i;
+    ie = header->ie;
+    oe = header->oe;
+    q = header->q;
+    
+    munmap((void *) header, sizeof(struct Header));
+    
+    char *dir;
 
-    if ((dir = (int *)mmap(NULL, ((sizeof(struct Entrada)*i*ie)+sizeof(struct Salida)+oe), PROT_READ | PROT_WRITE, MAP_SHARED, mem, 0)) == MAP_FAILED) {
+    if ((dir = (char *)mmap(NULL, ((sizeof(struct Entrada)*i*ie)+sizeof(struct Salida)+oe), PROT_READ | PROT_WRITE, MAP_SHARED, mem, 0)) == MAP_FAILED) {
         cerr << "Error mapeando la memoria compartida: "
         << errno << strerror(errno) << endl;
         exit(1);
     }
-    int *pos0 = dir;
+    char *pos0 = dir;
     //cout << dir << endl;
     while(n < i){
         //cout << "n " << n << " i " << i << endl;  
-        int *posI = (n*ie*sizeof(struct Entrada)) + dir;
+        char *posI = (n*ie*sizeof(struct Entrada)) + dir;
         m = 0;
         //cout << "posI " << posI << endl; 
         while ( m < ie)
         {
             //cout << "m " << m << " ie " << ie << endl;
-            int *posn = posI + (m * sizeof(struct Entrada));
+            char *posn = posI + (m * sizeof(struct Entrada));
             //cout << "posn " << posn << endl;
             struct Entrada *pRegistro = (struct Entrada *) posn;
             cout<<pRegistro->tipo<<endl;
@@ -54,9 +70,9 @@ string Ctrl::procesando(string nomseg, int i, int ie, int oe){
     }
     cout << "salio del while" << endl;
     return "algo";
-    
 }
-string Ctrl::esperando(string nomseg, int i, int ie, int oe){
+
+string Ctrl::terminados(string nomseg){
     string open = "/" + nomseg;
     int mem = shm_open(open.c_str(), O_RDWR, 0660);
     //int shmID;
@@ -67,7 +83,7 @@ string Ctrl::esperando(string nomseg, int i, int ie, int oe){
         exit(1);
     }
 }
-string Ctrl::terminados(string nomseg, int i, int ie, int oe){
+string Ctrl::reactivos(string nomseg){
     string open = "/" + nomseg;
     int mem = shm_open(open.c_str(), O_RDWR, 0660);
     //int shmID;
@@ -78,18 +94,7 @@ string Ctrl::terminados(string nomseg, int i, int ie, int oe){
         exit(1);
     }
 }
-string Ctrl::reactivos(string nomseg, int i, int ie, int oe){
-    string open = "/" + nomseg;
-    int mem = shm_open(open.c_str(), O_RDWR, 0660);
-    //int shmID;
-    //shmID = shmget(,0);
-    if (mem < 0){
-        cerr << "Error abriendo la memoria compartida: "
-	    << errno << strerror(errno) << endl;
-        exit(1);
-    }
-}
-string Ctrl::all(string nomseg, int i, int ie, int oe){
+string Ctrl::all(string nomseg){
     string open = "/" + nomseg;
     int mem = shm_open(open.c_str(), O_RDWR, 0660);
     //int shmID;
