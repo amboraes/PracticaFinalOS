@@ -12,6 +12,7 @@ using namespace std;
 
 void Stop::borrar(string memseg){
     string open = "/" + memseg;
+    string nombres[3] = {"Sangre","Piel","Ditritos"};
     int i;
     int mem = shm_open(open.c_str(), O_RDWR, 0660);
     struct Header *header =(struct Header *) mmap(NULL, sizeof(struct Header), PROT_READ | PROT_WRITE, MAP_SHARED, mem, 0);
@@ -38,7 +39,17 @@ void Stop::borrar(string memseg){
         sem_unlink(nombreVacios.c_str());
         sem_unlink(nombreMutex.c_str());
     }
-
+    
+    for (int j=0; j<3; j++)
+    {
+        string nombreLlenos = memseg + nombres[j] + "Llenos";
+        string nombreVacios = memseg + nombres[j] + "Vacios";
+        string nombreMutex = memseg + nombres[j] + "Mutex";
+        sem_unlink(nombreLlenos.c_str());
+        sem_unlink(nombreVacios.c_str());
+        sem_unlink(nombreMutex.c_str());
+    }
+    
     sem_unlink(nombreSemaforoSangre.c_str());
     sem_unlink(nombreSemaforoPiel.c_str());
     sem_unlink(nombreSemaforoDitritos.c_str());

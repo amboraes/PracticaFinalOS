@@ -12,5 +12,5 @@ public:
     string terminados(string nomseg);
     string reactivos(string nomseg);
     string all(string nomseg);
-    void actualizar(string tipomuestra, int valormuestra);
+    void actualizar(string nomseg,string tipomuestra, int valormuestra);
 };

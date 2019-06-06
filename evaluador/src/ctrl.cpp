@@ -97,6 +97,22 @@ string Ctrl::all(string nomseg){
         exit(1);
     }
 }
-void Ctrl::actualizar(string tipomuestra, int valormuestra){
+void Ctrl::actualizar(string nombseg,string tipomuestra, int valormuestra){
+    if(tipomuestra=="B"){
+        sem_t *sangre = sem_open((nombseg+"Sangre").c_str(), 0);
+        for(int i =0;i<valormuestra;i++){
+            sem_post(sangre);
+        }
+    }else  if(tipomuestra=="D"){
+        sem_t *ditritos = sem_open((nombseg+"Ditritos").c_str(), 0);
+        for(int i =0;i<valormuestra;i++){
+            sem_post(ditritos);
+        }
+    }else  if(tipomuestra=="S"){
+        sem_t *piel = sem_open((nombseg+"Piel").c_str(), 0);
+        for(int i =0;i<valormuestra;i++){
+            sem_post(piel);
+        }
+    }
 
 }

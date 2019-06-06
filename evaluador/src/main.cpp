@@ -113,6 +113,7 @@ int main(int argc, char *argv[])
                     cout << ident << endl;
                     reg.registrar(nomsegmem,bandeja,*tipomuestra.c_str(),cantmuestra,ident);
                     procesar.procesar(nomsegmem);
+                    procesar.procesado(nomsegmem);
 
                     cout << "> ";
                 }else{
@@ -200,7 +201,7 @@ int main(int argc, char *argv[])
                    else if (result.at(i) == "update"){
                         tipomuestra = result.at(i+1);
                         valormuestra = stoi(result.at(i+2));
-                        ctrl.actualizar(tipomuestra,valormuestra);
+                        ctrl.actualizar(nombreSeg,tipomuestra,valormuestra);
                     }
                 }
                 cout <<"> ";
