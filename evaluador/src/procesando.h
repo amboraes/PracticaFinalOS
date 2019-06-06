@@ -10,7 +10,7 @@ using namespace std;
 class Procesando {
 public:
     void procesar(string nomseg);
-    string procesando();
+    string procesando(string nomseg);
     vector<struct Entrada *> piel;
     vector<struct Entrada *> ditritos;
     vector<struct Entrada *> sangre;

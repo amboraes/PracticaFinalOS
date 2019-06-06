@@ -20,16 +20,6 @@ void Reg::registrar(string nomseg, int bandeja, char tipomuestra, int cantmuestr
     bool enter = false;
     int n = 0;
 
-    sem_t *vacios, *llenos, *mutex;
-
-    string nombreSemaforoLlenos = nomseg + "Llenos";
-    string nombreSemaforoVacios = nomseg + "Vacios";
-    string nombreSemaforoMutex = nomseg + "Mutex";
-
-    vacios = sem_open(nombreSemaforoVacios.c_str(), 0);
-    llenos = sem_open(nombreSemaforoLlenos.c_str(), 0);
-    mutex  = sem_open(nombreSemaforoMutex.c_str(), 0);
-
     int mem = shm_open(open.c_str(), O_RDWR, 0660);
     if (mem < 0){
         cerr << "Error abriendo la memoria compartida: "
@@ -58,10 +48,19 @@ void Reg::registrar(string nomseg, int bandeja, char tipomuestra, int cantmuestr
         << errno << strerror(errno) << endl;
         exit(1);
     }
+    sem_t *vacios, *llenos, *mutex;
+
+    string nombreSemaforoLlenos = nomseg + "Llenos" + to_string(bandeja);
+    string nombreSemaforoVacios = nomseg + "Vacios" + to_string(bandeja);
+    string nombreSemaforoMutex = nomseg + "Mutex" + to_string(bandeja);
+
+    vacios = sem_open(nombreSemaforoVacios.c_str(), 0);
+    llenos = sem_open(nombreSemaforoLlenos.c_str(), 0);
+    mutex  = sem_open(nombreSemaforoMutex.c_str(), 0);
     char *pos0 = dir;
-    //cout << dir << endl;
+    
     char *posI = (bandeja*ie*sizeof(struct Entrada)) + dir;
-    //cout << "posI " << posI << endl;
+    
     for(;;){ 
         sem_wait(vacios);
         sem_wait(mutex);
@@ -71,7 +70,7 @@ void Reg::registrar(string nomseg, int bandeja, char tipomuestra, int cantmuestr
             while(n < ie){
                 char *posn = posI + (n * sizeof(struct Entrada));
                 struct Entrada *pRegistro = (struct Entrada *) posn;
-                //cout << "posn " << posn << endl;
+                
                 if(pRegistro->cantidad <= 0){
                     cout << "entro al if de registro" << endl;
                     pRegistro->bandEntrada = entrada.bandEntrada;
@@ -79,7 +78,6 @@ void Reg::registrar(string nomseg, int bandeja, char tipomuestra, int cantmuestr
                     pRegistro->ident = entrada.ident;
                     pRegistro->tipo = entrada.tipo;
                     enter = true;
-                    //cout <<pRegistro->tipo<<endl;
                     break;
                 }
                 else{

@@ -19,10 +19,28 @@
 using namespace std;
 
     void Init::inicializar (int i, int pos, int entradasCola, string nombreSeg,int reactSangre, int reactDetritos, int  reactPiel, int sizeInternas){
+        sem_t **arraySemLlenos = new sem_t*[i];
+        sem_t **arraySemVacios = new sem_t*[i];
+        sem_t **arraySemMutex = new sem_t*[i];
+        
+        string nombreMemoriaSangre = nombreSeg + "Sangre";
+        string nombreMemoriaPiel = nombreSeg + "Piel";
+        string nombreMemoriaDitritos = nombreSeg + "Ditritos";
 
         string nombreSemaforoLlenos = nombreSeg + "Llenos";
         string nombreSemaforoVacios = nombreSeg + "Vacios";
         string nombreSemaforoMutex = nombreSeg + "Mutex";
+
+        for (int j=0; j<i; j++)
+        {
+            string nombreLlenos = nombreSemaforoLlenos + to_string(j);
+            string nombreVacios = nombreSemaforoVacios + to_string(j);
+            string nombreMutex = nombreSemaforoMutex + to_string(j);
+            arraySemLlenos[i] = sem_open(nombreLlenos.c_str(), O_CREAT | O_EXCL, 0660, 0);
+            arraySemVacios[i] = sem_open(nombreVacios.c_str(), O_CREAT | O_EXCL, 0660, pos);
+            arraySemMutex[i] = sem_open(nombreMutex.c_str(), O_CREAT | O_EXCL, 0660, 1);
+        }
+        
         string nombreSemaforoSangre = nombreSeg + "Sangre";
         string nombreSemaforoPiel = nombreSeg + "Piel";
         string nombreSemaforoDitritos = nombreSeg + "Ditritos";
@@ -31,11 +49,11 @@ using namespace std;
         sem_t *piel = sem_open(nombreSemaforoPiel.c_str(), O_CREAT | O_EXCL, 0660, reactPiel);
         sem_t *ditritos  = sem_open(nombreSemaforoDitritos.c_str(), O_CREAT | O_EXCL, 0660, reactDetritos);
 
-        sem_t *llenos  = sem_open(nombreSemaforoLlenos.c_str(), O_CREAT | O_EXCL, 0660, 0);
-        sem_t *vacios  = sem_open(nombreSemaforoVacios.c_str(), O_CREAT | O_EXCL, 0660, (i*pos));
-        sem_t *mutex  = sem_open(nombreSemaforoMutex.c_str(), O_CREAT | O_EXCL, 0660, 1);
-
         int mem = shm_open(nombreSeg.c_str(), O_RDWR | O_CREAT | O_EXCL, 0660);
+
+        int memSangre = shm_open(nombreMemoriaSangre.c_str(), O_RDWR | O_CREAT | O_EXCL, 0660);
+        int memPiel = shm_open(nombreMemoriaPiel.c_str(), O_RDWR | O_CREAT | O_EXCL, 0660);
+        int memDitritos = shm_open(nombreMemoriaDitritos.c_str(), O_RDWR | O_CREAT | O_EXCL, 0660);
 
         if (mem < 0){
             cerr << "Error creando la memoria compartida: "
@@ -48,6 +66,10 @@ using namespace std;
 	        << errno << strerror(errno) << endl;
             exit(1);
         }
+        
+        ftruncate(memSangre, (sizeof(struct Entrada)*sizeInternas));
+        ftruncate(memPiel, (sizeof(struct Entrada)*sizeInternas));
+        ftruncate(memDitritos, (sizeof(struct Entrada)*sizeInternas));
         
         void *dir;
 

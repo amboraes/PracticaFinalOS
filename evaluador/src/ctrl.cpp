@@ -15,10 +15,8 @@
 using namespace std;
 
 
-string Ctrl::procesando(string nomseg,Procesando proces){    
-    //printf("jueputa");
-    cout << &proces << endl;
-    return proces.procesando();
+string Ctrl::procesando(string nomseg,Procesando proces){
+    return proces.procesando(nomseg);
 }
 
 string Ctrl::esperando(string nomseg){
@@ -51,17 +49,14 @@ string Ctrl::esperando(string nomseg){
         exit(1);
     }
     char *pos0 = dir;
-    //cout << dir << endl;
+    
     while(n < i){
-        //cout << "n " << n << " i " << i << endl;  
         char *posI = (n*ie*sizeof(struct Entrada)) + dir;
         m = 0;
-        //cout << "posI " << posI << endl; 
+        
         while ( m < ie)
         {
-            //cout << "m " << m << " ie " << ie << endl;
             char *posn = posI + (m * sizeof(struct Entrada));
-            //cout << "posn " << posn << endl;
             struct Entrada *pRegistro = (struct Entrada *) posn;
             cout<<pRegistro->tipo<<endl;
             m++;
@@ -75,8 +70,7 @@ string Ctrl::esperando(string nomseg){
 string Ctrl::terminados(string nomseg){
     string open = "/" + nomseg;
     int mem = shm_open(open.c_str(), O_RDWR, 0660);
-    //int shmID;
-    //shmID = shmget(,0);
+
     if (mem < 0){
         cerr << "Error abriendo la memoria compartida: "
 	    << errno << strerror(errno) << endl;
@@ -86,8 +80,7 @@ string Ctrl::terminados(string nomseg){
 string Ctrl::reactivos(string nomseg){
     string open = "/" + nomseg;
     int mem = shm_open(open.c_str(), O_RDWR, 0660);
-    //int shmID;
-    //shmID = shmget(,0);
+    
     if (mem < 0){
         cerr << "Error abriendo la memoria compartida: "
 	    << errno << strerror(errno) << endl;
@@ -97,8 +90,7 @@ string Ctrl::reactivos(string nomseg){
 string Ctrl::all(string nomseg){
     string open = "/" + nomseg;
     int mem = shm_open(open.c_str(), O_RDWR, 0660);
-    //int shmID;
-    //shmID = shmget(,0);
+    
     if (mem < 0){
         cerr << "Error abriendo la memoria compartida: "
 	    << errno << strerror(errno) << endl;

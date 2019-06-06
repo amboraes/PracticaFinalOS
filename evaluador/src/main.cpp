@@ -177,22 +177,25 @@ int main(int argc, char *argv[])
                    if(result.at(i) == "list"){
                        string resultado;
                        if(result.at(i+1) == "processing"){
-                           cout << procesar.sangre.size()<< endl;
-                           resultado = ctrl.procesando(name,procesar);
-                           
-                       }
+                           resultado = ctrl.procesando(name,procesar); 
+                           cout << resultado << endl; 
+                        }
                        else if(result.at(i+1) == "waiting"){
                             resultado = ctrl.esperando(name);
-                       }
+                            cout << resultado << endl; 
+                        }
                        else if(result.at(i+1) == "reported"){
                             resultado = ctrl.reactivos(name);
-                       }
+                            cout << resultado << endl; 
+                        }
                        else if(result.at(i+1) == "reactive"){
                             resultado = ctrl.reactivos(name);
-                       }
+                            cout << resultado << endl; 
+                        }
                        else if(result.at(i+1) == "all"){
                             resultado = ctrl.all(name);
-                       }
+                            cout << resultado << endl; 
+                        }
                     }
                    else if (result.at(i) == "update"){
                         tipomuestra = result.at(i+1);
