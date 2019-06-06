@@ -7,6 +7,11 @@ using namespace std;
 
 class Bandejas {
 public:
-    void dividirMemoria(string nombreSeg);
+    Bandejas(string nomseg);
+    void dividirMemoria();
     char * getPos(int i);
+
+private:
+    string nomseg;
+    char **ban;
 };

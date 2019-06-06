@@ -13,9 +13,11 @@
 
 using namespace std;
 
-char **ban;
+Bandejas::Bandejas(string nombreseg){
+    nomseg = nombreseg;
+}
 
-void Bandejas::dividirMemoria(string nomseg){
+void Bandejas::dividirMemoria(){
     int i;
     int ie;
     int oe;
