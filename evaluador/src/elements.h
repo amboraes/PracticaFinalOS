@@ -22,3 +22,8 @@ struct Header {
   int d;
   char name[30];
 };
+
+struct EstructuraHilo{
+  int i;
+  char name[30];
+};

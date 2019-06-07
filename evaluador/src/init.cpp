@@ -41,6 +41,10 @@ using namespace std;
         string nombreSemaforoPiel = nombreSeg + "Piel";
         string nombreSemaforoDitritos = nombreSeg + "Ditritos";
 
+        string nombreSemaforoLlenosSalida = nombreSeg + "LlenosSalida";
+        string nombreSemaforoVaciosSalida = nombreSeg + "VaciosSalida";
+        string nombreSemaforoMutexSalida = nombreSeg + "MutexSalida";
+
         for (int j=0; j<i; j++)
         {
             string nombreLlenos = nombreSemaforoLlenos + to_string(j);
@@ -57,13 +61,17 @@ using namespace std;
             string nombreVacios = nombreSeg + nombres[j] + "Vacios";
             string nombreMutex = nombreSeg + nombres[j] + "Mutex";
             arraySemColasIntermediasLlenos[i] = sem_open(nombreLlenos.c_str(), O_CREAT | O_EXCL, 0660, 0);
-            arraySemColasIntermediasVacios[i] = sem_open(nombreVacios.c_str(), O_CREAT | O_EXCL, 0660, 0);
-            arraySemColasIntermediasMutex[i] = sem_open(nombreMutex.c_str(), O_CREAT | O_EXCL, 0660, 0);
+            arraySemColasIntermediasVacios[i] = sem_open(nombreVacios.c_str(), O_CREAT | O_EXCL, 0660, sizeInternas);
+            arraySemColasIntermediasMutex[i] = sem_open(nombreMutex.c_str(), O_CREAT | O_EXCL, 0660, 1);
         }
         
         sem_t *sangre = sem_open(nombreSemaforoSangre.c_str(), O_CREAT | O_EXCL, 0660, reactSangre);
         sem_t *piel = sem_open(nombreSemaforoPiel.c_str(), O_CREAT | O_EXCL, 0660, reactPiel);
         sem_t *ditritos  = sem_open(nombreSemaforoDitritos.c_str(), O_CREAT | O_EXCL, 0660, reactDetritos);
+
+        sem_t *vacios= sem_open(nombreSemaforoLlenosSalida.c_str(), O_CREAT | O_EXCL, 0660, 0);
+        sem_t *llenos = sem_open(nombreSemaforoVaciosSalida.c_str(), O_CREAT | O_EXCL, 0660, (entradasCola*3));
+        sem_t *mutex  = sem_open(nombreSemaforoMutexSalida.c_str(), O_CREAT | O_EXCL, 0660, 1);
 
         int mem = shm_open(nombreSeg.c_str(), O_RDWR | O_CREAT | O_EXCL, 0660);
 

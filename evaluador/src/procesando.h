@@ -9,7 +9,7 @@ using namespace std;
 
 class Procesando {
 public:
-    void procesar(string nomseg);
+    void procesar(string nomseg, int bandeja);
     string procesando(string nomseg);
     void procesado(string nomseg);
     vector<struct Entrada *> piel;

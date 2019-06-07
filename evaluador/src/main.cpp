@@ -27,6 +27,19 @@
 
 using namespace std;
 
+void* wrapperProcesar(void* arg){
+    Procesando procesaraux;
+    struct EstructuraHilo* est = (struct EstructuraHilo *) arg;
+    //cout << est->i <<endl;
+    procesaraux.procesar(est->name,est->i);
+    procesaraux.procesado(est->name);
+    return NULL;
+}
+
+void* wrapperExit(void* arg){
+
+}
+
 int main(int argc, char *argv[])
 {
     //void *dir;
@@ -38,6 +51,7 @@ int main(int argc, char *argv[])
     reactDetritos = 100, reactPiel = 100, sizeInternas = 6;
     string nombreSeg = "evaluator";
     string command = argv[1];
+    pthread_t *procs;
 
     if(command=="init"){
         cout << "enter" << endl;
@@ -91,16 +105,20 @@ int main(int argc, char *argv[])
         string nomsegmem,nomarchivo,contarchivo,tipomuestra;
         ifstream file;
         ofstream file2;
+        int i = 0;
         int bandeja, cantmuestra,ident;
         if(strcmp(argv[2],"-n")==0){
             nomsegmem= argv[3];
-
-            //cout << nomsegmem << endl;
-
+            string open = "/" + nomsegmem;
+            int mem = shm_open(open.c_str(), O_RDWR, 0660);
+            struct Header *header =(struct Header *) mmap(NULL, sizeof(struct Header), PROT_READ | PROT_WRITE, MAP_SHARED, mem, 0);
+            i = header->i;
+            munmap((void *) header, sizeof(struct Header));
         }
         //cout << "aca" << endl;
         if(strcmp(argv[4], "-") == 0){
             cout << "> ";
+            pthread_t hiloprocesar[i];
             while(cin>>bandeja>>tipomuestra>>cantmuestra){
                 ident = rand();
                 if(tipomuestra== "B" or tipomuestra== "D" or tipomuestra== "S" && (0<cantmuestra<=5)){
@@ -112,8 +130,24 @@ int main(int argc, char *argv[])
                     ids.push_back(ident);
                     cout << ident << endl;
                     reg.registrar(nomsegmem,bandeja,*tipomuestra.c_str(),cantmuestra,ident);
-                    procesar.procesar(nomsegmem);
-                    procesar.procesado(nomsegmem);
+                    struct EstructuraHilo estructura;
+                    //char aux[nombreSeg.size()+1];
+                    //strcpy(aux,nombreSeg.c_str());
+                    //estructura.i = bandeja;
+                    strcpy(estructura.name,nombreSeg.c_str());
+                    //cout << estructura.name << endl;
+                    pthread_create(&hiloprocesar[0],NULL,wrapperProcesar,&estructura);
+                    for(int j=0;j<i;j++){
+                        estructura.i = j;
+                        pthread_create(&hiloprocesar[j],NULL,wrapperProcesar,&estructura);
+                        //cout << algo <<endl;
+                    }
+                    //for(int k = 0; k < 3; k++){
+                        //pthread_create(procs, NULL, Procesando::procesado , &estructura );
+                    //}
+                    //wrapperProcesar(&nomsegmem);
+                    //procesar.procesar(nomsegmem);
+                    //procesar.procesado(nomsegmem);
 
                     cout << "> ";
                 }else{
@@ -179,29 +213,36 @@ int main(int argc, char *argv[])
                        string resultado;
                        if(result.at(i+1) == "processing"){
                            resultado = ctrl.procesando(name,procesar); 
+                           result.erase(result.begin()+1);
                            cout << resultado << endl; 
                         }
                        else if(result.at(i+1) == "waiting"){
                             resultado = ctrl.esperando(name);
+                            result.erase(result.begin()+1);
                             cout << resultado << endl; 
                         }
                        else if(result.at(i+1) == "reported"){
                             resultado = ctrl.reactivos(name);
+                            result.erase(result.begin()+1);
                             cout << resultado << endl; 
                         }
                        else if(result.at(i+1) == "reactive"){
                             resultado = ctrl.reactivos(name);
+                            result.erase(result.begin()+1);
                             cout << resultado << endl; 
                         }
                        else if(result.at(i+1) == "all"){
                             resultado = ctrl.all(name);
+                            result.erase(result.begin()+1);
                             cout << resultado << endl; 
                         }
-                    }
-                   else if (result.at(i) == "update"){
+                    }else if (result.at(i) == "update"){
                         tipomuestra = result.at(i+1);
                         valormuestra = stoi(result.at(i+2));
                         ctrl.actualizar(nombreSeg,tipomuestra,valormuestra);
+                    }else if(result.at(i) != "update" && result.at(i) != "list" && !EOF){
+                        cerr << "Sub comando Erroneo" << endl;
+                        exit(1);
                     }
                 }
                 cout <<"> ";

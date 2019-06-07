@@ -62,8 +62,8 @@ void Reg::registrar(string nomseg, int bandeja, char tipomuestra, int cantmuestr
     char *posI = (bandeja*ie*sizeof(struct Entrada)) + dir;
     
     for(;;){ 
-        sem_wait(vacios);
-        sem_wait(mutex);
+        //sem_wait(vacios);
+        //sem_wait(mutex);
 
         while (!enter)
         {
@@ -72,12 +72,16 @@ void Reg::registrar(string nomseg, int bandeja, char tipomuestra, int cantmuestr
                 struct Entrada *pRegistro = (struct Entrada *) posn;
                 
                 if(pRegistro->cantidad <= 0){
+                    sem_wait(vacios);
+                    sem_wait(mutex);
                     cout << "entro al if de registro" << endl;
                     pRegistro->bandEntrada = entrada.bandEntrada;
                     pRegistro->cantidad = entrada.cantidad;
                     pRegistro->ident = entrada.ident;
                     pRegistro->tipo = entrada.tipo;
                     enter = true;
+                    sem_post(mutex);
+                    sem_post(llenos);
                     break;
                 }
                 else{
@@ -91,9 +95,8 @@ void Reg::registrar(string nomseg, int bandeja, char tipomuestra, int cantmuestr
             }
 
         }
-        sem_post(mutex);
-        sem_post(llenos);
+        //sem_post(mutex);
+        //sem_post(llenos);
         break;
     }
-    
 }

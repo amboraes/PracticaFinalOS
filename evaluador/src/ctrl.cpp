@@ -49,6 +49,7 @@ string Ctrl::esperando(string nomseg){
         exit(1);
     }
     char *pos0 = dir;
+    char *posFinal = dir+(sizeof(struct Entrada) * i * ie) + sizeof(struct Salida);
     
     while(n < i){
         char *posI = (n*ie*sizeof(struct Entrada)) + dir;
@@ -57,6 +58,21 @@ string Ctrl::esperando(string nomseg){
         while ( m < ie)
         {
             char *posn = posI + (m * sizeof(struct Entrada));
+            struct Entrada *pRegistro = (struct Entrada *) posn;
+            cout<<pRegistro->tipo<<endl;
+            m++;
+        }
+        n++;
+    }
+    n=0;
+    cout << "aqui empieza lo de salida" << endl;
+    while(n < i){
+        char *posISalida = (n*ie*sizeof(struct Entrada)) + posFinal;
+        m = 0;
+        
+        while ( m < ie)
+        {
+            char *posn = posISalida + (m * sizeof(struct Entrada));
             struct Entrada *pRegistro = (struct Entrada *) posn;
             cout<<pRegistro->tipo<<endl;
             m++;
@@ -78,6 +94,7 @@ string Ctrl::terminados(string nomseg){
     }
 }
 string Ctrl::reactivos(string nomseg){
+    string tmp = "Reactives:\n\n";
     string open = "/" + nomseg;
     int mem = shm_open(open.c_str(), O_RDWR, 0660);
     
@@ -86,6 +103,23 @@ string Ctrl::reactivos(string nomseg){
 	    << errno << strerror(errno) << endl;
         exit(1);
     }
+    string semaforoDitritos = nomseg+"Ditritos";
+    string semaforoSangre = nomseg+"Sangre";
+    string semaforoPiel = nomseg+"Piel";
+
+    sem_t *ditritos,*sangre,*piel;
+    int valditritos,valsangre,valpiel;
+    
+    ditritos=sem_open(semaforoDitritos.c_str(),0);
+    sangre=sem_open(semaforoSangre.c_str(),0);
+    piel=sem_open(semaforoPiel.c_str(),0);
+
+    sem_getvalue(ditritos,&valditritos);
+    sem_getvalue(sangre,&valsangre);
+    sem_getvalue(piel,&valpiel);
+
+    tmp += "B: "+to_string(valsangre)+"\n"+"S: "+to_string(valpiel)+"\n"+"D: "+to_string(valditritos);
+    return tmp;
 }
 string Ctrl::all(string nomseg){
     string open = "/" + nomseg;
