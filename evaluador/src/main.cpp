@@ -30,7 +30,6 @@ using namespace std;
 void* wrapperProcesar(void* arg){
     Procesando procesaraux;
     struct EstructuraHilo* est = (struct EstructuraHilo *) arg;
-    //cout << est->i <<endl;
     procesaraux.procesar(est->name,est->i);
     procesaraux.procesado(est->name);
     return NULL;
@@ -42,7 +41,6 @@ void* wrapperExit(void* arg){
 
 int main(int argc, char *argv[])
 {
-    //void *dir;
     Procesando procesar;
     map<string, int> idMemSeg;
     vector <string> options={"-i","-ie","-oe","-n","-b","-d","-ee","-s","-q"};
@@ -131,16 +129,12 @@ int main(int argc, char *argv[])
                     cout << ident << endl;
                     reg.registrar(nomsegmem,bandeja,*tipomuestra.c_str(),cantmuestra,ident);
                     struct EstructuraHilo estructura;
-                    //char aux[nombreSeg.size()+1];
-                    //strcpy(aux,nombreSeg.c_str());
                     //estructura.i = bandeja;
                     strcpy(estructura.name,nombreSeg.c_str());
-                    //cout << estructura.name << endl;
                     pthread_create(&hiloprocesar[0],NULL,wrapperProcesar,&estructura);
                     for(int j=0;j<i;j++){
                         estructura.i = j;
                         pthread_create(&hiloprocesar[j],NULL,wrapperProcesar,&estructura);
-                        //cout << algo <<endl;
                     }
                     //for(int k = 0; k < 3; k++){
                         //pthread_create(procs, NULL, Procesando::procesado , &estructura );
@@ -222,7 +216,7 @@ int main(int argc, char *argv[])
                             cout << resultado << endl; 
                         }
                        else if(result.at(i+1) == "reported"){
-                            resultado = ctrl.reactivos(name);
+                            resultado = ctrl.terminados(name);
                             result.erase(result.begin()+1);
                             cout << resultado << endl; 
                         }

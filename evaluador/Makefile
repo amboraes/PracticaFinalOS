@@ -4,7 +4,7 @@ SRCDIR=src
 ${SRCDIR}/evaluator: ${SRCDIR}/main.o ${SRCDIR}/init.o ${SRCDIR}/reg.o ${SRCDIR}/ctrl.o ${SRCDIR}/rep.o ${SRCDIR}/stop.o ${SRCDIR}/procesando.o
 	$(CXX) -o $@ $^ $(LDFLAGS)
 
-${SRCDIR}/main.o: ${SRCDIR}/main.cpp ${SRCDIR}/init.h ${SRCDIR}/reg.h ${SRCDIR}/ctrl.h ${SRCDIR}/rep.h
+${SRCDIR}/main.o: ${SRCDIR}/main.cpp ${SRCDIR}/init.h ${SRCDIR}/reg.h ${SRCDIR}/ctrl.h ${SRCDIR}/rep.h ${SRCDIR}/procesando.h ${SRCDIR}/stop.h
 
 ${SRCDIR}/init.o: ${SRCDIR}/init.cpp ${SRCDIR}/init.h
 

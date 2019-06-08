@@ -1,41 +1,55 @@
 #include <pthread.h>
 #include <cstring>
+#include "procs.h"
 #include "procesando.h"
 
 using namespace std;
 
-class Procs
+Procs* instance = 0;
+pthread_t hiloprocesar[];
+
+
+Procs::Procs(int i, string nomSeg)
 {
+    pthread_t temp[i + 3];
+    struct EstructuraHilo estructura;
+    strcpy(estructura.name,nomSeg.c_str());
 
-    Procs *Procs::instance = 0;
-    pthread_t hiloprocesar[];
-
-    Procs::Procs(int i, string nomSeg)
+    for (int j = 0; j < i; j++)
     {
-        pthread_t temp[i + 3];
-        for (int j = 0; j < i; j++)
-        {
-            pthread_create(&hiloprocesar[0], NULL, wrapperProcesar, &estructura);
-        }
+        pthread_create(&hiloprocesar[j], NULL, wrapperProcesar, &estructura);
     }
 
-    Procs *Procs::getInstance(int i, string nomSeg)
-    {
-        if (instance == 0)
-        {
-            instance = new Procs(i, nomSeg);
-        }
+    for (int k = i; k < (i + 3); k++){
+        pthread_create(&hiloprocesar[k], NULL, wrapperProcesar, &estructura);    
+    }
+}
 
-        return instance;
+Procs *Procs::getInstance(int i, string nomSeg)
+{
+    if (instance == 0)
+    {
+        instance = new Procs(i, nomSeg);
     }
 
-    void *wrapperProcesar(void *arg)
-    {
-        Procesando procesaraux;
-        struct EstructuraHilo *est = (struct EstructuraHilo *)arg;
-        //cout << est->i <<endl;
-        procesaraux.procesar(est->name, est->i);
-        procesaraux.procesado(est->name);
-        return NULL;
-    }
+    return instance;
+}
+
+void *wrapperProcesar(void *arg)
+{
+    Procesando procesaraux;
+    struct EstructuraHilo *est = (struct EstructuraHilo *)arg;
+    //cout << est->i <<endl;
+    procesaraux.procesar(est->name, est->i);
+    
+    return NULL;
+}
+
+void *wrapperProcesando(void *arg){
+
+    Procesando procesaraux;
+    struct EstructuraHilo *est = (struct EstructuraHilo *)arg;
+    procesaraux.procesado(est->name);
+    return NULL;
+    
 }
