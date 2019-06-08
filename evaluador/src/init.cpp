@@ -41,9 +41,9 @@ using namespace std;
         string nombreSemaforoPiel = nombreSeg + "Piel";
         string nombreSemaforoDitritos = nombreSeg + "Ditritos";
 
-        string nombreSemaforoLlenosSalida = nombreSeg + "LlenosSalida";
-        string nombreSemaforoVaciosSalida = nombreSeg + "VaciosSalida";
-        string nombreSemaforoMutexSalida = nombreSeg + "MutexSalida";
+        string nombreSemaforoLlenosSalida = nombreSeg + "Lsalida";
+        string nombreSemaforoVaciosSalida = nombreSeg + "Vsalida";
+        string nombreSemaforoMutexSalida = nombreSeg + "Msalida";
 
         for (int j=0; j<i; j++)
         {
@@ -69,7 +69,7 @@ using namespace std;
         sem_t *piel = sem_open(nombreSemaforoPiel.c_str(), O_CREAT | O_EXCL, 0660, reactPiel);
         sem_t *ditritos  = sem_open(nombreSemaforoDitritos.c_str(), O_CREAT | O_EXCL, 0660, reactDetritos);
 
-        sem_t *llenos= sem_open(nombreSemaforoLlenosSalida.c_str(), O_CREAT | O_EXCL, 0660, 0);
+        sem_t *llenos = sem_open(nombreSemaforoLlenosSalida.c_str(), O_CREAT | O_EXCL, 0660, 0);
         sem_t *vacios = sem_open(nombreSemaforoVaciosSalida.c_str(), O_CREAT | O_EXCL, 0660, entradasCola);
         sem_t *mutex  = sem_open(nombreSemaforoMutexSalida.c_str(), O_CREAT | O_EXCL, 0660, 1);
 
@@ -85,7 +85,7 @@ using namespace std;
             exit(1);
         }
 
-        if (ftruncate(mem, ((sizeof(struct Entrada)*i*pos)+sizeof(struct Salida)+entradasCola)) != 0){
+        if (ftruncate(mem, (sizeof(struct Header)+(sizeof(struct Entrada)*i*pos)+sizeof(struct Salida)+entradasCola)) != 0){
             cerr << "Error creando la memoria compartida: "
 	        << errno << strerror(errno) << endl;
             exit(1);

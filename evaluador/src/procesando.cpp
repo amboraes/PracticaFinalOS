@@ -148,6 +148,7 @@ void Procesando::procesar(string nomseg, int bandeja)
                             pRegistroSangre->cantidad = pRegistro->cantidad;
                             pRegistroSangre->ident = pRegistro->ident;
                             pRegistroSangre->tipo = pRegistro->tipo;
+                            //pRegistro->cantidad = -1;
                             enterSangre = true;
                             sem_post(mutexS);
                             sem_post(llenosS);
@@ -195,6 +196,7 @@ void Procesando::procesar(string nomseg, int bandeja)
                             pRegistroSangre->cantidad = pRegistro->cantidad;
                             pRegistroSangre->ident = pRegistro->ident;
                             pRegistroSangre->tipo = pRegistro->tipo;
+                            //pRegistro->cantidad = -1;
                             enterPiel = true;
                             sem_post(mutexP);
                             sem_post(llenosP);
@@ -243,6 +245,7 @@ void Procesando::procesar(string nomseg, int bandeja)
                             pRegistroSangre->cantidad = pRegistro->cantidad;
                             pRegistroSangre->ident = pRegistro->ident;
                             pRegistroSangre->tipo = pRegistro->tipo;
+                            //pRegistro->cantidad = -1;
                             enterDitritos = true;
                             sem_post(mutexD);
                             sem_post(llenosD);
@@ -398,9 +401,10 @@ void Procesando::procesado(string nomseg)
     semditritos = sem_open(nombreSemDitritos.c_str(), 0);
     sempiel = sem_open(nombreSemPiel.c_str(), 0);
 
-    string nombreSemaforoLlenosSalida = nomseg + "LlenosSalida";
-    string nombreSemaforoVaciosSalida = nomseg + "VaciosSalida";
-    string nombreSemaforoMutexSalida = nomseg + "MutexSalida";
+    string nombreSemaforoLlenosSalida = nomseg + "Lsalida";
+    string nombreSemaforoVaciosSalida = nomseg + "Vsalida";
+    string nombreSemaforoMutexSalida = nomseg + "Msalida";
+    //cout <<"nombre semaforo en procesando: " << nombreSemaforoLlenosSalida << endl;
 
     string nombreSemaforoLlenosS = nomseg + nombres[0] + "Llenos";
     string nombreSemaforoVaciosS = nomseg + nombres[0] + "Vacios";
@@ -414,6 +418,7 @@ void Procesando::procesado(string nomseg)
     string nombreSemaforoVaciosD = nomseg + nombres[2] + "Vacios";
     string nombreSemaforoMutexD = nomseg + nombres[2] + "Mutex";
 
+    //cout << "Nombre semaforo antes de abrir el semaforo: " << nombreSemaforoLlenosSalida.c_str() << endl;
     vaciosSalida = sem_open(nombreSemaforoVaciosSalida.c_str(), 0);
     llenosSalida = sem_open(nombreSemaforoLlenosSalida.c_str(), 0);
     mutexSalida = sem_open(nombreSemaforoMutexSalida.c_str(), 0);
@@ -476,9 +481,6 @@ void Procesando::procesado(string nomseg)
                 struct Entrada *registrosalida = (struct Entrada *)posnsalida;
                 if (registrosalida->cantidad <= 0)
                 {   
-                    int temp1,temp2,temp3;
-                    sem_getvalue(vaciosSalida,&temp1);
-                    cout <<"valor semvacios: " << temp1 << endl;
                     sem_wait(vaciosSalida);
                     sem_wait(mutexSalida);
                     registrosalida->cantidad = pRegistrosangre->cantidad;
@@ -490,11 +492,7 @@ void Procesando::procesado(string nomseg)
                     {
                         sem_wait(semsangre);
                     }
-                    sem_getvalue(mutexSalida,&temp2);
-                    cout <<"valor mutexvacio: " << temp2 << endl;
                     sem_post(mutexSalida);
-                    sem_getvalue(vaciosSalida,&temp3);
-                    cout <<"valor llenos salida: " << temp3 << endl;
                     sem_post(llenosSalida);
                     break;
                 }
@@ -525,8 +523,8 @@ void Procesando::procesado(string nomseg)
                 struct Entrada *registrosalida = (struct Entrada *)posnsalida;
                 if (registrosalida->cantidad <= 0)
                 {
-                    //sem_wait(vaciosSalida);
-                    //sem_wait(mutexSalida);   
+                    sem_wait(vaciosSalida);
+                    sem_wait(mutexSalida);   
                     registrosalida->cantidad = pRegistro->cantidad;
                     registrosalida->ident = pRegistro->ident;
                     registrosalida->tipo = pRegistro->tipo;
@@ -536,8 +534,8 @@ void Procesando::procesado(string nomseg)
                     {
                         sem_wait(sempiel);
                     }
-                    //sem_post(mutexSalida);
-                    //sem_post(llenosSalida);
+                    sem_post(mutexSalida);
+                    sem_post(llenosSalida);
                     break;
                 }
                 temp++;
@@ -567,8 +565,8 @@ void Procesando::procesado(string nomseg)
                 struct Entrada *registrosalida = (struct Entrada *)posnsalida;
                 if (registrosalida->cantidad <= 0)
                 {
-                    //sem_wait(vaciosSalida);
-                    //sem_wait(mutexSalida);
+                    sem_wait(vaciosSalida);
+                    sem_wait(mutexSalida);
                     registrosalida->cantidad = pRegistro->cantidad;
                     registrosalida->ident = pRegistro->ident;
                     registrosalida->tipo = pRegistro->tipo;
@@ -578,8 +576,8 @@ void Procesando::procesado(string nomseg)
                     {
                         sem_wait(semditritos);
                     }
-                    //sem_post(mutexSalida);
-                    //sem_post(llenosSalida);
+                    sem_post(mutexSalida);
+                    sem_post(llenosSalida);
                     break;
                 }
                 temp++;

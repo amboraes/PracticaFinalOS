@@ -132,7 +132,7 @@ string Ctrl::esperando(string nomseg){
     
     char *dir;
 
-    if ((dir = (char *)mmap(NULL, ((sizeof(struct Entrada)*i*ie)+sizeof(struct Salida)+oe), PROT_READ | PROT_WRITE, MAP_SHARED, mem, 0)) == MAP_FAILED) {
+    if ((dir = (char *)mmap(NULL,((sizeof(struct Entrada)*i*ie)+sizeof(struct Salida)+oe), PROT_READ | PROT_WRITE, MAP_SHARED, mem, 0)) == MAP_FAILED) {
         cerr << "Error mapeando la memoria compartida: "
         << errno << strerror(errno) << endl;
         exit(1);
@@ -140,7 +140,7 @@ string Ctrl::esperando(string nomseg){
     char *pos0 = dir;
     
     while(n < i){
-        char *posI = (n*ie*sizeof(struct Entrada)) + dir;
+        char *posI = (n*ie*sizeof(struct Entrada))+ sizeof(struct Header) +dir;
         m = 0;
         
         while ( m < ie)

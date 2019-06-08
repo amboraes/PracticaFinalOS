@@ -43,7 +43,7 @@ void Reg::registrar(string nomseg, int bandeja, char tipomuestra, int cantmuestr
     entrada.tipo = tipomuestra;
     entrada.ident = ident;
 
-    if ((dir = (char *)mmap(NULL, (sizeof(struct Header)+(sizeof(struct Entrada)*i*ie)+sizeof(struct Salida)+oe), PROT_READ | PROT_WRITE, MAP_SHARED, mem, 0)) == MAP_FAILED) {
+    if ((dir = (char *)mmap(NULL, ((sizeof(struct Entrada)*i*ie)+sizeof(struct Salida)+oe), PROT_READ | PROT_WRITE, MAP_SHARED, mem, 0)) == MAP_FAILED) {
         cerr << "Error mapeando la memoria compartida: "
         << errno << strerror(errno) << endl;
         exit(1);
@@ -71,7 +71,7 @@ void Reg::registrar(string nomseg, int bandeja, char tipomuestra, int cantmuestr
                 if(pRegistro->cantidad <= 0){
                     sem_wait(vacios);
                     sem_wait(mutex);
-                    cout << "entro al if de registro" << endl;
+                    //cout << "entro al if de registro" << endl;
                     pRegistro->bandEntrada = entrada.bandEntrada;
                     pRegistro->cantidad = entrada.cantidad;
                     pRegistro->ident = entrada.ident;

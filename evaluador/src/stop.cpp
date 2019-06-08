@@ -29,9 +29,9 @@ void Stop::borrar(string memseg){
     string nombreSemaforoSangre = memseg + "Sangre";
     string nombreSemaforoPiel = memseg + "Piel";
     string nombreSemaforoDitritos = memseg + "Ditritos";
-    string nombreSemaforoSalidaVacio = memseg +"LlenosSalida";
-    string nombreSemaforoSalidaLLeno = memseg +"MutexSalida";
-    string nombreSemaforoSalidaMutex = memseg +"VaciosSalida";
+    string nombreSemaforoSalidaVacio = memseg +"Lsalida";
+    string nombreSemaforoSalidaLLeno = memseg +"Msalida";
+    string nombreSemaforoSalidaMutex = memseg +"Vsalida";
 
     for (int j=0; j<i; j++)
     {
@@ -52,7 +52,7 @@ void Stop::borrar(string memseg){
         sem_unlink(nombreVacios.c_str());
         sem_unlink(nombreMutex.c_str());
     }
-    string tmp = "/evaluato",tmp2="pruebaLl";
+    string tmp = "/evaluato",tmp2="pruebaVa";
     shm_unlink(tmp.c_str());
     sem_unlink(tmp2.c_str());
     sem_unlink(nombreSemaforoSangre.c_str());

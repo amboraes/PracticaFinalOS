@@ -119,7 +119,7 @@ int main(int argc, char *argv[])
             pthread_t hiloprocesar[i];
             while(cin>>bandeja>>tipomuestra>>cantmuestra){
                 ident = rand();
-                printf("fuckme\n" );
+                //printf("fuckme\n" );
 
                 if((tipomuestra== "B" || tipomuestra== "D" || tipomuestra== "S") && (0<cantmuestra<=5)){
                     vector<int>::iterator tempo = find(ids.begin(),ids.end(),ident);
@@ -183,6 +183,8 @@ int main(int argc, char *argv[])
                     cout << ident << endl;
                     contarchivo += to_string(ident)+"\n";
                     reg.registrar(nomsegmem,bandeja,*tipomuestra.c_str(),cantmuestra,ident);
+                    procesar.procesar(nomsegmem,bandeja);
+                    procesar.procesado(nomsegmem);
                 }
                 file.close();
                 file2.open("../examples/" + nomarchivo+".spl");
