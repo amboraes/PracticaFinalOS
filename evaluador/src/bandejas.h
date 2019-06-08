@@ -13,5 +13,5 @@ public:
 
 private:
     string nomseg;
-    char **ban;
+    char **ban[];
 };

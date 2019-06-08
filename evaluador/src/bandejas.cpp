@@ -42,7 +42,7 @@ void Bandejas::dividirMemoria(){
 
     struct Entrada *dir;
 
-    if ((dir = (struct Entrada *)mmap(NULL, (sizeof(struct Header)+(sizeof(struct Entrada)*i*ie)+sizeof(struct Salida)+oe), PROT_READ | PROT_WRITE, MAP_SHARED, mem, 0)) == MAP_FAILED) {
+    if ((dir = (struct Entrada *)mmap(NULL, (sizeof(struct Header)+(sizeof(struct Entrada)*i*ie)+(sizeof(struct Salida)*oe)), PROT_READ | PROT_WRITE, MAP_SHARED, mem, 0)) == MAP_FAILED) {
         cerr << "Error mapeando la memoria compartida: "
         << errno << strerror(errno) << endl;
         exit(1);
@@ -51,7 +51,7 @@ void Bandejas::dividirMemoria(){
     ban = new char *[i];
     ban[0] = (((char *)dir) + sizeof(struct Header));
     for (int nb; nb < i; nb++){
-        ban[nb] = (ban[nb - 1]+sizeof( struct Entrada) * i * ie);
+        ban[nb] = (ban[nb - 1]+ (sizeof( struct Entrada) * ie));
     }
 }
 

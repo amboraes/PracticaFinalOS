@@ -10,6 +10,7 @@
 #include "elements.h"
 #include <string>
 #include "reg.h"
+#include "bandejas.h"
 #include "procesando.h"
 
 using namespace std;
@@ -43,11 +44,11 @@ void Reg::registrar(string nomseg, int bandeja, char tipomuestra, int cantmuestr
     entrada.tipo = tipomuestra;
     entrada.ident = ident;
 
-    if ((dir = (char *)mmap(NULL, ((sizeof(struct Entrada)*i*ie)+sizeof(struct Salida)+oe), PROT_READ | PROT_WRITE, MAP_SHARED, mem, 0)) == MAP_FAILED) {
-        cerr << "Error mapeando la memoria compartida: "
-        << errno << strerror(errno) << endl;
-        exit(1);
-    }
+    //if ((dir = (char *)mmap(NULL, ((sizeof(struct Entrada)*i*ie)+(sizeof(struct Salida)*oe)), PROT_READ | PROT_WRITE, MAP_SHARED, mem, 0)) == MAP_FAILED) {
+        //cerr << "Error mapeando la memoria compartida: "
+        //<< errno << strerror(errno) << endl;
+        //exit(1);
+    
     sem_t *vacios, *llenos, *mutex;
 
     string nombreSemaforoLlenos = nomseg + "Llenos" + to_string(bandeja);
@@ -57,9 +58,16 @@ void Reg::registrar(string nomseg, int bandeja, char tipomuestra, int cantmuestr
     vacios = sem_open(nombreSemaforoVacios.c_str(), 0);
     llenos = sem_open(nombreSemaforoLlenos.c_str(), 0);
     mutex  = sem_open(nombreSemaforoMutex.c_str(), 0);
-    char *pos0 = dir;
+    //char *pos0 = dir;
+    //cout << "direccion en el reg" << (void*) dir << endl;
+    //char *posI = (bandeja*ie*sizeof(struct Entrada)) +dir;
 
-    char *posI = (bandeja*ie*sizeof(struct Entrada)) + dir;
+    char *dir = Bandejas::getPos(bandeja);
+
+    while (!enter){
+
+    }
+    
 
     for(;;){
         while (!enter)
@@ -95,3 +103,4 @@ void Reg::registrar(string nomseg, int bandeja, char tipomuestra, int cantmuestr
         break;
     }
 }
+

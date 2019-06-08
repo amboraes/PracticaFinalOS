@@ -254,18 +254,20 @@ int main(int argc, char *argv[])
 
     if(command == "rep"){
         string name,opcion;
-        int valor,valorsleep;
+        int valor,valorsleep,cantexam;
+        Rep rep;
         if(strcmp(argv[2],"-n")==0){
             name = argv[3];
             cout << "> ";
             while(cin >>opcion>>valor){
                 if(opcion == "-i"){
                     valorsleep=valor;
-                    //para lo que tiene que esperar se hace
-                    //sleep(rand()%valorsleep +1);
                 }
                 if(opcion == "-m"){
-                    //esperar hasta que el tamaño de la cola de examenes sea igual a valor
+                    cantexam=valor;
+                }
+                if(cantexam>=0 && valorsleep>=0){
+                    rep.liberar(valorsleep,cantexam,name);
                 }
                 cout << "> ";
             }

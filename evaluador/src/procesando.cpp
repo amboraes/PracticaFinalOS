@@ -15,6 +15,7 @@
 #include <string>
 #include <vector>
 #include <pthread.h>
+#include <ctime>
 
 using namespace std;
 
@@ -458,11 +459,12 @@ void Procesando::procesado(string nomseg)
     char *posPiel = dirMemPiel;
     char *posDitritos = dirMemDitritos;
 
-    char *dir = (char *)mmap(NULL, ((sizeof(struct Entrada) * i * ie) + sizeof(struct Salida) + oe), PROT_READ | PROT_WRITE, MAP_SHARED, mem, 0);
+    char *dir = (char *)mmap(NULL, ((sizeof(struct Entrada) * i * ie) + (sizeof(struct Salida) * oe)), PROT_READ | PROT_WRITE, MAP_SHARED, mem, 0);
 
     char *dirsalida = dir + (sizeof(struct Entrada) * i * ie);
 
-    int temp = 0;
+    int temp = 0,val;
+    srand(time(NULL));
 
     char *posISangre = (q * sizeof(struct Entrada)) + dirMemSangre;
     mSangre = 0;
@@ -477,21 +479,28 @@ void Procesando::procesado(string nomseg)
             sem_wait(mutexS);
             while (temp < oe)
             {
-                char *posnsalida = dirsalida + (sizeof(struct Entrada) * temp);
-                struct Entrada *registrosalida = (struct Entrada *)posnsalida;
-                if (registrosalida->cantidad <= 0)
+                char *posnsalida = dirsalida + (sizeof(struct Salida) * temp);
+                struct Salida *registrosalida = (struct Salida *)posnsalida;
+                if (registrosalida->ident <= 0)
                 {   
                     sem_wait(vaciosSalida);
                     sem_wait(mutexSalida);
-                    registrosalida->cantidad = pRegistrosangre->cantidad;
                     registrosalida->ident = pRegistrosangre->ident;
                     registrosalida->tipo = pRegistrosangre->tipo;
-                    registrosalida->bandEntrada = pRegistrosangre->bandEntrada;
-                    pRegistrosangre->cantidad = -1;
-                    for (int i = 0; i < registrosalida->cantidad; i++)
+                    registrosalida->bandeja = pRegistrosangre->bandEntrada;
+                    val = rand()%(50+1);
+                    if(val<=15 && val>=0){
+                        registrosalida->result ='?';
+                    }else if (val>=16 && val <= 35){
+                        registrosalida->result ='N';
+                    }else if (val>=36 && val <= 50){
+                        registrosalida->result ='P';
+                    }
+                    for (int i = 0; i < pRegistrosangre->cantidad; i++)
                     {
                         sem_wait(semsangre);
                     }
+                    pRegistrosangre->cantidad = -1;
                     sem_post(mutexSalida);
                     sem_post(llenosSalida);
                     break;

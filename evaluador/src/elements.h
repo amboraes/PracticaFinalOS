@@ -9,7 +9,10 @@ struct Entrada {
 };
 
 struct Salida {
-  int tamano;
+  int ident;
+  int bandeja;
+  char tipo;
+  char result;
 };
 
 struct Header {

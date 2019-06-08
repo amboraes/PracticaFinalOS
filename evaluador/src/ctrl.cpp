@@ -138,17 +138,17 @@ string Ctrl::esperando(string nomseg){
         exit(1);
     }
     char *pos0 = dir;
-    
+    cout << "direccion en el waiting" << (void*) dir << endl;
     while(n < i){
-        char *posI = (n*ie*sizeof(struct Entrada))+ sizeof(struct Header) +dir;
+        char *posI = (n*ie*sizeof(struct Entrada))+dir;
         m = 0;
         
         while ( m < ie)
         {
             char *posn = posI + (m * sizeof(struct Entrada));
             struct Entrada *pRegistro = (struct Entrada *) posn;
-            //cout<<pRegistro->tipo<<endl;
-            if(pRegistro->cantidad > 0){
+            //cout<<pRegistro->ident <<endl;
+            if((pRegistro->cantidad > 0) && (pRegistro->tipo != 'd')){
                 temp += to_string(pRegistro->ident) + " " + to_string(pRegistro->bandEntrada) + " " + pRegistro->tipo + " " + to_string(pRegistro->cantidad) + "\n";
             }
             m++;
@@ -182,7 +182,7 @@ string Ctrl::terminados(string nomseg){
 
     char *dir;
 
-    if ((dir = (char *)mmap(NULL, ((sizeof(struct Entrada)*i*ie)+sizeof(struct Salida)+oe), PROT_READ | PROT_WRITE, MAP_SHARED, mem, 0)) == MAP_FAILED) {
+    if ((dir = (char *)mmap(NULL, ((sizeof(struct Entrada)*i*ie)+(sizeof(struct Salida)*oe)), PROT_READ | PROT_WRITE, MAP_SHARED, mem, 0)) == MAP_FAILED) {
         cerr << "Error mapeando la memoria compartida: "
         << errno << strerror(errno) << endl;
         exit(1);
@@ -190,21 +190,21 @@ string Ctrl::terminados(string nomseg){
 
     char *posFinal = dir+(sizeof(struct Entrada) * i * ie);
     
-    while(n < i){
+    
         char *posISalida = (n*ie*sizeof(struct Entrada)) + posFinal;
         m = 0;
         
-        while ( m < ie)
+        while ( m < oe)
         {
-            char *posn = posISalida + (m * sizeof(struct Entrada));
-            struct Entrada *pRegistro = (struct Entrada *) posn;
-            if(pRegistro->cantidad > 0){
-                temp += to_string(pRegistro->ident) + " " + to_string(pRegistro->bandEntrada) + " " + pRegistro->tipo + " " + to_string(pRegistro->cantidad) + "\n";
+            char *posn = posISalida + (m * sizeof(struct Salida));
+            struct Salida *pRegistro = (struct Salida *) posn;
+            if(pRegistro->ident > 0){
+                temp += to_string(pRegistro->ident) + " " + to_string(pRegistro->bandeja) + " " + pRegistro->tipo + " " + pRegistro->result + "\n";
             }
             m++;
         }
         n++;
-    }
+    
     
     return temp+"\n";
 }

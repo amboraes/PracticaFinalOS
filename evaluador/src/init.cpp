@@ -89,6 +89,7 @@ using namespace std;
             cerr << "Error creando la memoria compartida: "
 	        << errno << strerror(errno) << endl;
             exit(1);
+
         }
 
         ftruncate(memSangre, (sizeof(struct Entrada)*sizeInternas));
@@ -104,7 +105,6 @@ using namespace std;
             exit(1);
         }
         cout << dir << endl;
-        cout << (i*pos) << endl;
         struct Header *header = (struct Header *) dir;
         header->i = i;
         header->ie = pos;
