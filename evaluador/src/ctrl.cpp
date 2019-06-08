@@ -15,8 +15,96 @@
 using namespace std;
 
 
-string Ctrl::procesando(string nomseg,Procesando proces){
-    return proces.procesando(nomseg);
+string Ctrl::procesando(string nomseg){
+    string tmp = "Processing:\n\n";
+    int i, ie, oe, q;
+
+    int nSangre = 0;
+    int nPiel = 0;
+    int nDitritos = 0;
+
+    int mSangre = 0;
+    int mPiel = 0;
+    int mDitritos = 0;
+    string open = "/" + nomseg;
+    string nombreMemoriaSangre = "/" + nomseg + "Sangre";
+    string nombreMemoriaPiel = "/" + nomseg + "Piel";
+    string nombreMemoriaDitritos = "/" + nomseg + "Ditritos";
+
+    int mem = shm_open(open.c_str(), O_RDWR, 0660);
+    int memSangre = shm_open(nombreMemoriaSangre.c_str(), O_RDWR, 0660);
+    int memPiel = shm_open(nombreMemoriaPiel.c_str(), O_RDWR, 0660);
+    int memDitritos = shm_open(nombreMemoriaDitritos.c_str(), O_RDWR, 0660);
+
+    if (mem < 0)
+    {
+        cerr << "Error abriendo la memoria compartida: "
+             << errno << strerror(errno) << endl;
+        exit(1);
+    }
+
+    struct Header *header = (struct Header *)mmap(NULL, sizeof(struct Header), PROT_READ | PROT_WRITE, MAP_SHARED, mem, 0);
+    i = header->i;
+    ie = header->ie;
+    oe = header->oe;
+    q = header->q;
+
+    munmap((void *)header, sizeof(struct Header));
+
+    char *dirMemSangre = (char *)mmap(NULL, ((sizeof(struct Entrada) * q)), PROT_READ | PROT_WRITE, MAP_SHARED, memSangre, 0);
+    char *dirMemPiel = (char *)mmap(NULL, ((sizeof(struct Entrada) * q)), PROT_READ | PROT_WRITE, MAP_SHARED, memPiel, 0);
+    char *dirMemDitritos = (char *)mmap(NULL, ((sizeof(struct Entrada) * q)), PROT_READ | PROT_WRITE, MAP_SHARED, memDitritos, 0);
+
+    char *posSangre = dirMemSangre;
+    char *posPiel = dirMemPiel;
+    char *posDitritos = dirMemDitritos;
+
+    char *posISangre = (q * sizeof(struct Entrada)) + dirMemSangre;
+    mSangre = 0;
+
+    while (mSangre < q)
+    {
+        char *posnSangre = posISangre + (mSangre * sizeof(struct Entrada));
+        struct Entrada *pRegistro = (struct Entrada *)posnSangre;
+        if (pRegistro->cantidad > 0)
+        {
+            tmp += to_string(pRegistro->ident) + " " + to_string(pRegistro->bandEntrada) + " " + pRegistro->tipo + " " + to_string(pRegistro->cantidad) + "\n";
+            //cout<<pRegistro->bandEntrada<<" "<<pRegistro->cantidad<<" "<<pRegistro->tipo<<" "<<pRegistro->ident<<endl;
+        }
+        mSangre++;
+    }
+
+    char *posIPiel = (q * sizeof(struct Entrada)) + dirMemPiel;
+    mPiel = 0;
+
+    while (mPiel < q)
+    {
+        char *posnPiel = posIPiel + (mPiel * sizeof(struct Entrada));
+        struct Entrada *pRegistro = (struct Entrada *)posnPiel;
+        if (pRegistro->cantidad > 0)
+        {
+            tmp += to_string(pRegistro->ident) + " " + to_string(pRegistro->bandEntrada) + " " + pRegistro->tipo + " " + to_string(pRegistro->cantidad) + "\n";
+            //cout<<pRegistro->bandEntrada<<" "<<pRegistro->cantidad<<" "<<pRegistro->tipo<<" "<<pRegistro->ident<<endl;
+        }
+        mPiel++;
+    }
+
+    char *posIDitritos = (q * sizeof(struct Entrada)) + dirMemDitritos;
+    mDitritos = 0;
+
+    while (mDitritos < q)
+    {
+        char *posnDitritos = posIDitritos + (mDitritos * sizeof(struct Entrada));
+        struct Entrada *pRegistro = (struct Entrada *)posnDitritos;
+        if (pRegistro->cantidad > 0)
+        {
+            tmp += to_string(pRegistro->ident) + " " + to_string(pRegistro->bandEntrada) + " " + pRegistro->tipo + " " + to_string(pRegistro->cantidad) + "\n";
+            //cout<<pRegistro->bandEntrada<<" "<<pRegistro->cantidad<<" "<<pRegistro->tipo<<" "<<pRegistro->ident<<endl;
+        }
+        mDitritos++;
+    }
+
+    return tmp;
 }
 
 string Ctrl::esperando(string nomseg){
@@ -100,7 +188,7 @@ string Ctrl::terminados(string nomseg){
         exit(1);
     }
 
-    char *posFinal = dir+(sizeof(struct Entrada) * i * ie) + sizeof(struct Salida);
+    char *posFinal = dir+(sizeof(struct Entrada) * i * ie);
     
     while(n < i){
         char *posISalida = (n*ie*sizeof(struct Entrada)) + posFinal;
@@ -152,7 +240,7 @@ string Ctrl::reactivos(string nomseg){
 string Ctrl::all(string nomseg){
     string open = "/" + nomseg;
     int mem = shm_open(open.c_str(), O_RDWR, 0660);
-    Procesando proc;
+    //Procesando proc;
     string temp = "";
     
     
@@ -161,7 +249,7 @@ string Ctrl::all(string nomseg){
 	    << errno << strerror(errno) << endl;
         exit(1);
     }
-    temp+=procesando(nomseg,proc);
+    temp+=procesando(nomseg);
     temp+=esperando(nomseg);
     temp+=terminados(nomseg);
     temp+=reactivos(nomseg);

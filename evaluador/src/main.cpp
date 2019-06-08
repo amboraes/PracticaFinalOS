@@ -119,7 +119,9 @@ int main(int argc, char *argv[])
             pthread_t hiloprocesar[i];
             while(cin>>bandeja>>tipomuestra>>cantmuestra){
                 ident = rand();
-                if(tipomuestra== "B" or tipomuestra== "D" or tipomuestra== "S" && (0<cantmuestra<=5)){
+                printf("fuckme\n" );
+
+                if((tipomuestra== "B" || tipomuestra== "D" || tipomuestra== "S") && (0<cantmuestra<=5)){
                     vector<int>::iterator tempo = find(ids.begin(),ids.end(),ident);
                     while (tempo != ids.end()){
                         vector<int>::iterator tempo = find(ids.begin(),ids.end(),ident);
@@ -128,29 +130,33 @@ int main(int argc, char *argv[])
                     ids.push_back(ident);
                     cout << ident << endl;
                     reg.registrar(nomsegmem,bandeja,*tipomuestra.c_str(),cantmuestra,ident);
-                    struct EstructuraHilo estructura;
+                    //struct EstructuraHilo estructura;
                     //estructura.i = bandeja;
-                    strcpy(estructura.name,nombreSeg.c_str());
-                    pthread_create(&hiloprocesar[0],NULL,wrapperProcesar,&estructura);
+                    //strcpy(estructura.name,nomsegmem.c_str());
+                    /*pthread_create(&hiloprocesar[0],NULL,wrapperProcesar,&estructura);
+
                     for(int j=0;j<i;j++){
                         estructura.i = j;
                         pthread_create(&hiloprocesar[j],NULL,wrapperProcesar,&estructura);
-                    }
+                    }*/
+
                     //for(int k = 0; k < 3; k++){
                         //pthread_create(procs, NULL, Procesando::procesado , &estructura );
                     //}
                     //wrapperProcesar(&nomsegmem);
-                    //procesar.procesar(nomsegmem);
-                    //procesar.procesado(nomsegmem);
+                    procesar.procesar(nomsegmem,bandeja);
+                    procesar.procesado(nomsegmem);
 
                     cout << "> ";
+                    
                 }else{
-                    cout << ">";
+                    cout << "> ";
+
                 }
             }
             //printf("antes de llamar procesar");
             //cout << &procesar << " espacio x2 " << endl;
-            
+
             //cout << procesar.sangre.size() << endl;
         }else {
             for (int i = 4; i < argc ;i++){
@@ -206,29 +212,29 @@ int main(int argc, char *argv[])
                    if(result.at(i) == "list"){
                        string resultado;
                        if(result.at(i+1) == "processing"){
-                           resultado = ctrl.procesando(name,procesar); 
+                           resultado = ctrl.procesando(name);
                            result.erase(result.begin()+1);
-                           cout << resultado << endl; 
+                           cout << resultado << endl;
                         }
                        else if(result.at(i+1) == "waiting"){
                             resultado = ctrl.esperando(name);
                             result.erase(result.begin()+1);
-                            cout << resultado << endl; 
+                            cout << resultado << endl;
                         }
                        else if(result.at(i+1) == "reported"){
                             resultado = ctrl.terminados(name);
                             result.erase(result.begin()+1);
-                            cout << resultado << endl; 
+                            cout << resultado << endl;
                         }
                        else if(result.at(i+1) == "reactive"){
                             resultado = ctrl.reactivos(name);
                             result.erase(result.begin()+1);
-                            cout << resultado << endl; 
+                            cout << resultado << endl;
                         }
                        else if(result.at(i+1) == "all"){
                             resultado = ctrl.all(name);
                             result.erase(result.begin()+1);
-                            cout << resultado << endl; 
+                            cout << resultado << endl;
                         }
                     }else if (result.at(i) == "update"){
                         tipomuestra = result.at(i+1);

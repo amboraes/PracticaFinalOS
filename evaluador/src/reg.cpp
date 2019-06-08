@@ -32,17 +32,17 @@ void Reg::registrar(string nomseg, int bandeja, char tipomuestra, int cantmuestr
     ie = header->ie;
     oe = header->oe;
     q = header->q;
-    
+
     munmap((void *) header, sizeof(struct Header));
 
     char *dir;
-    
+
     struct Entrada entrada;
     entrada.bandEntrada = bandeja;
     entrada.cantidad = cantmuestra;
     entrada.tipo = tipomuestra;
     entrada.ident = ident;
-    
+
     if ((dir = (char *)mmap(NULL, (sizeof(struct Header)+(sizeof(struct Entrada)*i*ie)+sizeof(struct Salida)+oe), PROT_READ | PROT_WRITE, MAP_SHARED, mem, 0)) == MAP_FAILED) {
         cerr << "Error mapeando la memoria compartida: "
         << errno << strerror(errno) << endl;
@@ -58,19 +58,16 @@ void Reg::registrar(string nomseg, int bandeja, char tipomuestra, int cantmuestr
     llenos = sem_open(nombreSemaforoLlenos.c_str(), 0);
     mutex  = sem_open(nombreSemaforoMutex.c_str(), 0);
     char *pos0 = dir;
-    
-    char *posI = (bandeja*ie*sizeof(struct Entrada)) + dir;
-    
-    for(;;){ 
-        //sem_wait(vacios);
-        //sem_wait(mutex);
 
+    char *posI = (bandeja*ie*sizeof(struct Entrada)) + dir;
+
+    for(;;){
         while (!enter)
         {
             while(n < ie){
                 char *posn = posI + (n * sizeof(struct Entrada));
                 struct Entrada *pRegistro = (struct Entrada *) posn;
-                
+
                 if(pRegistro->cantidad <= 0){
                     sem_wait(vacios);
                     sem_wait(mutex);
@@ -95,8 +92,6 @@ void Reg::registrar(string nomseg, int bandeja, char tipomuestra, int cantmuestr
             }
 
         }
-        //sem_post(mutex);
-        //sem_post(llenos);
         break;
     }
 }

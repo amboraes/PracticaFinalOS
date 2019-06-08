@@ -17,7 +17,7 @@ void Stop::borrar(string memseg){
     int mem = shm_open(open.c_str(), O_RDWR, 0660);
     struct Header *header =(struct Header *) mmap(NULL, sizeof(struct Header), PROT_READ | PROT_WRITE, MAP_SHARED, mem, 0);
     i = header->i;
-    
+
     munmap((void *) header, sizeof(struct Header));
 
     string nombreMemoriaSangre = "/" + memseg + "Sangre";
@@ -42,7 +42,7 @@ void Stop::borrar(string memseg){
         sem_unlink(nombreVacios.c_str());
         sem_unlink(nombreMutex.c_str());
     }
-    
+
     for (int j=0; j<3; j++)
     {
         string nombreLlenos = memseg + nombres[j] + "Llenos";
@@ -52,7 +52,9 @@ void Stop::borrar(string memseg){
         sem_unlink(nombreVacios.c_str());
         sem_unlink(nombreMutex.c_str());
     }
-    
+    string tmp = "/evaluato",tmp2="pruebaLl";
+    shm_unlink(tmp.c_str());
+    sem_unlink(tmp2.c_str());
     sem_unlink(nombreSemaforoSangre.c_str());
     sem_unlink(nombreSemaforoPiel.c_str());
     sem_unlink(nombreSemaforoDitritos.c_str());

@@ -28,7 +28,7 @@ using namespace std;
         sem_t **arraySemColasIntermediasMutex = new sem_t*[3];
 
         string nombres[3] = {"Sangre","Piel","Ditritos"};
-        
+
         string nombreMemoriaSangre = nombreSeg + "Sangre";
         string nombreMemoriaPiel = nombreSeg + "Piel";
         string nombreMemoriaDitritos = nombreSeg + "Ditritos";
@@ -64,17 +64,17 @@ using namespace std;
             arraySemColasIntermediasVacios[i] = sem_open(nombreVacios.c_str(), O_CREAT | O_EXCL, 0660, sizeInternas);
             arraySemColasIntermediasMutex[i] = sem_open(nombreMutex.c_str(), O_CREAT | O_EXCL, 0660, 1);
         }
-        
+
         sem_t *sangre = sem_open(nombreSemaforoSangre.c_str(), O_CREAT | O_EXCL, 0660, reactSangre);
         sem_t *piel = sem_open(nombreSemaforoPiel.c_str(), O_CREAT | O_EXCL, 0660, reactPiel);
         sem_t *ditritos  = sem_open(nombreSemaforoDitritos.c_str(), O_CREAT | O_EXCL, 0660, reactDetritos);
 
-        sem_t *vacios= sem_open(nombreSemaforoLlenosSalida.c_str(), O_CREAT | O_EXCL, 0660, 0);
-        sem_t *llenos = sem_open(nombreSemaforoVaciosSalida.c_str(), O_CREAT | O_EXCL, 0660, (entradasCola*3));
+        sem_t *llenos= sem_open(nombreSemaforoLlenosSalida.c_str(), O_CREAT | O_EXCL, 0660, 0);
+        sem_t *vacios = sem_open(nombreSemaforoVaciosSalida.c_str(), O_CREAT | O_EXCL, 0660, entradasCola);
         sem_t *mutex  = sem_open(nombreSemaforoMutexSalida.c_str(), O_CREAT | O_EXCL, 0660, 1);
 
         int mem = shm_open(nombreSeg.c_str(), O_RDWR | O_CREAT | O_EXCL, 0660);
-
+        
         int memSangre = shm_open(nombreMemoriaSangre.c_str(), O_RDWR | O_CREAT | O_EXCL, 0660);
         int memPiel = shm_open(nombreMemoriaPiel.c_str(), O_RDWR | O_CREAT | O_EXCL, 0660);
         int memDitritos = shm_open(nombreMemoriaDitritos.c_str(), O_RDWR | O_CREAT | O_EXCL, 0660);
@@ -90,11 +90,11 @@ using namespace std;
 	        << errno << strerror(errno) << endl;
             exit(1);
         }
-        
+
         ftruncate(memSangre, (sizeof(struct Entrada)*sizeInternas));
         ftruncate(memPiel, (sizeof(struct Entrada)*sizeInternas));
         ftruncate(memDitritos, (sizeof(struct Entrada)*sizeInternas));
-        
+
         void *dir;
 
         if ((dir = mmap(NULL, sizeof(struct Header), PROT_READ | PROT_WRITE, MAP_SHARED,
@@ -109,7 +109,7 @@ using namespace std;
         header->i = i;
         header->ie = pos;
         header->oe = entradasCola;
-        header->q = sizeInternas; 
+        header->q = sizeInternas;
         header->s = reactPiel;
         header->d = reactDetritos;
         header->b = reactSangre;
@@ -123,4 +123,3 @@ using namespace std;
         //return dir;
         //return EXIT_SUCCESS;*/
     }
-
