@@ -135,7 +135,6 @@ string Ctrl::esperando(string nomseg){
         << errno << strerror(errno) << endl;
         exit(1);
     }
-    char *pos0 = dir;
     cout << "direccion en el waiting" << (void*) dir << endl;
     while(n < i){
         char *posI = (n*ie*sizeof(struct Entrada))+dir;
