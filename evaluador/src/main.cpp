@@ -196,18 +196,19 @@ int main(int argc, char *argv[])
                     ids.push_back(ident);
                     cout << ident << endl;
                     contarchivo += to_string(ident)+"\n";
+                    cout << nomsegmem << endl;
                     reg.registrar(nomsegmem,bandeja,*tipomuestra.c_str(),cantmuestra,ident);
-                    struct EstructuraHilo estructura;
+                    //struct EstructuraHilo estructura;
                     //estructura.i = bandeja;
-                    strcpy(estructura.name,nomsegmem.c_str());
-                    pthread_create(&hiloprocesar[0],NULL,wrapperProcesar,&estructura);
+                    //strcpy(estructura.name,nomsegmem.c_str());
+                    //pthread_create(&hiloprocesar[0],NULL,wrapperProcesar,&estructura);
 
-                    for(int j=0;j<i;j++){
-                        estructura.i = j;
-                        pthread_create(&hiloprocesar[j],NULL,wrapperProcesar,&estructura);
-                    }
-                    //procesar.procesar(nomsegmem,bandeja);
-                    //procesar.procesado(nomsegmem);
+                    //for(int j=0;j<i;j++){
+                    //    estructura.i = j;
+                    //    pthread_create(&hiloprocesar[j],NULL,wrapperProcesar,&estructura);
+                    //}
+                    procesar.procesar(nomsegmem,bandeja);
+                    procesar.procesado(nomsegmem);
                 }
                 file.close();
                 file2.open("../examples/" + nomarchivo+".spl");

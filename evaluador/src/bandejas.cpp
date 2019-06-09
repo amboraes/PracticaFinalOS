@@ -43,7 +43,7 @@ void Bandejas::dividirMemoria(string nomseg){
 
     
 
-    if ((dir = (struct Entrada *)mmap(NULL, (sizeof(struct Header)+(sizeof(struct Entrada)*i*ie)+(sizeof(struct Salida)*oe)), PROT_READ | PROT_WRITE, MAP_SHARED, mem, 0)) == MAP_FAILED) {
+    if ((dir = (struct Entrada *)mmap(NULL, ((sizeof(struct Entrada)*i*ie)+(sizeof(struct Salida)*oe)), PROT_READ | PROT_WRITE, MAP_SHARED, mem, 0)) == MAP_FAILED) {
         cerr << "Error mapeando la memoria compartida (Dividir Memoria): "
         << errno << strerror(errno) << endl;
         exit(1);

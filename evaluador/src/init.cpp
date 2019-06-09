@@ -85,7 +85,7 @@ using namespace std;
             exit(1);
         }
 
-        if (ftruncate(mem, (sizeof(struct Header)+(sizeof(struct Entrada)*i*pos)+(sizeof(struct Salida)*entradasCola))) != 0){
+        if (ftruncate(mem, ((sizeof(struct Entrada)*i*pos)+(sizeof(struct Salida)*entradasCola))) != 0){
             cerr << "Error creando la memoria compartida: "
 	        << errno << strerror(errno) << endl;
             exit(1);
