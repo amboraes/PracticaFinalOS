@@ -85,7 +85,7 @@ using namespace std;
             exit(1);
         }
 
-        if (ftruncate(mem, (sizeof(struct Header)+(sizeof(struct Entrada)*i*pos)+sizeof(struct Salida)+entradasCola)) != 0){
+        if (ftruncate(mem, (sizeof(struct Header)+(sizeof(struct Entrada)*i*pos)+(sizeof(struct Salida)*entradasCola))) != 0){
             cerr << "Error creando la memoria compartida: "
 	        << errno << strerror(errno) << endl;
             exit(1);
@@ -104,6 +104,7 @@ using namespace std;
             << errno << strerror(errno) << endl;
             exit(1);
         }
+
         cout << dir << endl;
         struct Header *header = (struct Header *) dir;
         header->i = i;
@@ -114,6 +115,8 @@ using namespace std;
         header->d = reactDetritos;
         header->b = reactSangre;
         strcpy(header->name, nombreSeg.c_str());
+
+        munmap((void *)header, sizeof(struct Header));
 
         //Bandejas bandejas;
         //bandejas.dividirMemoria(nombreSeg);

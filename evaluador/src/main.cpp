@@ -4,6 +4,7 @@
 #include <semaphore.h>
 #include <iostream>
 #include <cstdlib>
+#include <ctime>  
 #include <cerrno>
 #include <cstring>
 #include <unistd.h>
@@ -30,6 +31,7 @@ using namespace std;
 void* wrapperProcesar(void* arg){
     Procesando procesaraux;
     struct EstructuraHilo* est = (struct EstructuraHilo *) arg;
+    //cout << est->name << endl;
     procesaraux.procesar(est->name,est->i);
     procesaraux.procesado(est->name);
     return NULL;
@@ -50,6 +52,7 @@ int main(int argc, char *argv[])
     string nombreSeg = "evaluator";
     string command = argv[1];
     pthread_t *procs;
+    
 
     if(command=="init"){
         cout << "enter" << endl;
@@ -118,34 +121,37 @@ int main(int argc, char *argv[])
             cout << "> ";
             pthread_t hiloprocesar[i];
             while(cin>>bandeja>>tipomuestra>>cantmuestra){
+                srand(time(NULL));
                 ident = rand();
                 //printf("fuckme\n" );
 
                 if((tipomuestra== "B" || tipomuestra== "D" || tipomuestra== "S") && (0<cantmuestra<=5)){
-                    vector<int>::iterator tempo = find(ids.begin(),ids.end(),ident);
+                    /* vector<int>::iterator tempo = find(ids.begin(),ids.end(),ident);
                     while (tempo != ids.end()){
-                        vector<int>::iterator tempo = find(ids.begin(),ids.end(),ident);
-                        ident = rand();
+                        vector
                     }
+                    <int>::iterator tempo = find(ids.begin(),ids.end(),ident);
+                    */
+                    ident = rand()%RAND_MAX;
                     ids.push_back(ident);
                     cout << ident << endl;
                     reg.registrar(nomsegmem,bandeja,*tipomuestra.c_str(),cantmuestra,ident);
-                    //struct EstructuraHilo estructura;
+                    struct EstructuraHilo estructura;
                     //estructura.i = bandeja;
-                    //strcpy(estructura.name,nomsegmem.c_str());
-                    /*pthread_create(&hiloprocesar[0],NULL,wrapperProcesar,&estructura);
+                    strcpy(estructura.name,nomsegmem.c_str());
+                    pthread_create(&hiloprocesar[0],NULL,wrapperProcesar,&estructura);
 
                     for(int j=0;j<i;j++){
                         estructura.i = j;
                         pthread_create(&hiloprocesar[j],NULL,wrapperProcesar,&estructura);
-                    }*/
+                    }
 
                     //for(int k = 0; k < 3; k++){
                         //pthread_create(procs, NULL, Procesando::procesado , &estructura );
                     //}
                     //wrapperProcesar(&nomsegmem);
-                    procesar.procesar(nomsegmem,bandeja);
-                    procesar.procesado(nomsegmem);
+                    //procesar.procesar(nomsegmem,bandeja);
+                    //procesar.procesado(nomsegmem);
 
                     cout << "> ";
                     
@@ -159,11 +165,12 @@ int main(int argc, char *argv[])
 
             //cout << procesar.sangre.size() << endl;
         }else {
-            for (int i = 4; i < argc ;i++){
-                file.open(argv[i]);
-                nomarchivo = argv[i];
+            for (int q = 4; q < argc ;q++){
+                file.open(argv[q]);
+                nomarchivo = argv[q];
                 nomarchivo = nomarchivo.substr(0,nomarchivo.find("."));
                 string line;
+                pthread_t hiloprocesar[i];
                 while(getline(file,line)){
                     istringstream iss(line);
                     iss>>bandeja>>tipomuestra>>cantmuestra;
@@ -179,12 +186,28 @@ int main(int argc, char *argv[])
                         cerr << "Error con la cantidad de muestras" << endl;
                         exit(1);
                     }*/
-                    ident = rand();
+                    srand(time(NULL));
+                    ident = rand()%RAND_MAX;
+                    /* vector<int>::iterator tempo = find(ids.begin(),ids.end(),ident);
+                    while (tempo != ids.end()){
+                        ident = rand();
+                        vector<int>::iterator tempo = find(ids.begin(),ids.end(),ident);
+                    }*/
+                    ids.push_back(ident);
                     cout << ident << endl;
                     contarchivo += to_string(ident)+"\n";
                     reg.registrar(nomsegmem,bandeja,*tipomuestra.c_str(),cantmuestra,ident);
-                    procesar.procesar(nomsegmem,bandeja);
-                    procesar.procesado(nomsegmem);
+                    struct EstructuraHilo estructura;
+                    //estructura.i = bandeja;
+                    strcpy(estructura.name,nomsegmem.c_str());
+                    pthread_create(&hiloprocesar[0],NULL,wrapperProcesar,&estructura);
+
+                    for(int j=0;j<i;j++){
+                        estructura.i = j;
+                        pthread_create(&hiloprocesar[j],NULL,wrapperProcesar,&estructura);
+                    }
+                    //procesar.procesar(nomsegmem,bandeja);
+                    //procesar.procesado(nomsegmem);
                 }
                 file.close();
                 file2.open("../examples/" + nomarchivo+".spl");
@@ -241,7 +264,7 @@ int main(int argc, char *argv[])
                     }else if (result.at(i) == "update"){
                         tipomuestra = result.at(i+1);
                         valormuestra = stoi(result.at(i+2));
-                        ctrl.actualizar(nombreSeg,tipomuestra,valormuestra);
+                        ctrl.actualizar(name,tipomuestra,valormuestra);
                     }else if(result.at(i) != "update" && result.at(i) != "list" && !EOF){
                         cerr << "Sub comando Erroneo" << endl;
                         exit(1);
@@ -253,8 +276,8 @@ int main(int argc, char *argv[])
     }
 
     if(command == "rep"){
-        string name,opcion;
-        int valor,valorsleep,cantexam;
+        string name,opcion,salida;
+        int valor=0,valorsleep=0,cantexam=0;
         Rep rep;
         if(strcmp(argv[2],"-n")==0){
             name = argv[3];
@@ -263,11 +286,15 @@ int main(int argc, char *argv[])
                 if(opcion == "-i"){
                     valorsleep=valor;
                 }
+                
                 if(opcion == "-m"){
                     cantexam=valor;
                 }
-                if(cantexam>=0 && valorsleep>=0){
-                    rep.liberar(valorsleep,cantexam,name);
+                if(cantexam>0 && valorsleep>0){
+                    salida = rep.liberar(valorsleep,cantexam,name);
+                    cout << salida << endl;
+                    valorsleep =0;
+                    cantexam=0;
                 }
                 cout << "> ";
             }

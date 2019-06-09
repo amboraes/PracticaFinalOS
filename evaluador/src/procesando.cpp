@@ -115,7 +115,7 @@ void Procesando::procesar(string nomseg, int bandeja)
 
     while (m < ie)
     {
-
+        sleep(2);
         char *posn = posI + (m * sizeof(struct Entrada));
         struct Entrada *pRegistro = (struct Entrada *)posn;
 
@@ -131,44 +131,42 @@ void Procesando::procesar(string nomseg, int bandeja)
         {
             sem_wait(llenos);
             sem_wait(mutex);
-            for (;;)
-            {
 
-                while (!enterSangre)
+            while (!enterSangre)
+            {
+                sleep(2);
+                while (nSangre < q)
                 {
-                    while (nSangre < q)
+                    char *posnSangre = posISangre + (nSangre * sizeof(struct Entrada));
+                    struct Entrada *pRegistroSangre = (struct Entrada *)posnSangre;
+
+                    if (pRegistroSangre->cantidad <= 0)
                     {
-                        char *posnSangre = posISangre + (nSangre * sizeof(struct Entrada));
-                        struct Entrada *pRegistroSangre = (struct Entrada *)posnSangre;
-                        
-                        if (pRegistroSangre->cantidad <= 0)
-                        {
-                            sem_wait(vaciosS);
-                            sem_wait(mutexS);
-                            pRegistroSangre->bandEntrada = pRegistro->bandEntrada;
-                            pRegistroSangre->cantidad = pRegistro->cantidad;
-                            pRegistroSangre->ident = pRegistro->ident;
-                            pRegistroSangre->tipo = pRegistro->tipo;
-                            //pRegistro->cantidad = -1;
-                            enterSangre = true;
-                            sem_post(mutexS);
-                            sem_post(llenosS);
-                            break;
-                        }
-                        else
-                        {
-                            nSangre++;
-                        }
+                        sem_wait(vaciosS);
+                        sem_wait(mutexS);
+                        pRegistroSangre->bandEntrada = pRegistro->bandEntrada;
+                        pRegistroSangre->cantidad = pRegistro->cantidad;
+                        pRegistroSangre->ident = pRegistro->ident;
+                        pRegistroSangre->tipo = pRegistro->tipo;
+                        //pRegistro->cantidad = -1;
+                        enterSangre = true;
+                        sem_post(mutexS);
+                        sem_post(llenosS);
+                        break;
                     }
-                    if (nSangre >= q && !enterSangre)
+                    else
                     {
-                        cout << "Registro está lleno" << endl;
-                        sleep(5);
-                        nSangre = 0;
+                        nSangre++;
                     }
                 }
-                break;
+                if (nSangre >= q && !enterSangre)
+                {
+                    cout << "Registro está lleno" << endl;
+                    sleep(5);
+                    nSangre = 0;
+                }
             }
+
             pRegistro->bandEntrada = entrada.bandEntrada;
             pRegistro->cantidad = entrada.cantidad;
             pRegistro->ident = entrada.ident;
@@ -180,44 +178,42 @@ void Procesando::procesar(string nomseg, int bandeja)
         {
             sem_wait(llenos);
             sem_wait(mutex);
-            for (;;)
-            {
-                while (!enterPiel)
-                {
-                    while (nPiel < q)
-                    {
-                        char *posnPiel = posIPiel + (nPiel * sizeof(struct Entrada));
-                        struct Entrada *pRegistroSangre = (struct Entrada *)posnPiel;
 
-                        if (pRegistroSangre->cantidad <= 0)
-                        {
-                            sem_wait(vaciosP);
-                            sem_wait(mutexP);
-                            pRegistroSangre->bandEntrada = pRegistro->bandEntrada;
-                            pRegistroSangre->cantidad = pRegistro->cantidad;
-                            pRegistroSangre->ident = pRegistro->ident;
-                            pRegistroSangre->tipo = pRegistro->tipo;
-                            //pRegistro->cantidad = -1;
-                            enterPiel = true;
-                            sem_post(mutexP);
-                            sem_post(llenosP);
-                            break;
-                        }
-                        else
-                        {
-                            nPiel++;
-                        }
-                    }
-                    if (nPiel >= q && !enterPiel)
+            while (!enterPiel)
+            {
+                sleep(2);
+                while (nPiel < q)
+                {
+                    char *posnPiel = posIPiel + (nPiel * sizeof(struct Entrada));
+                    struct Entrada *pRegistroSangre = (struct Entrada *)posnPiel;
+
+                    if (pRegistroSangre->cantidad <= 0)
                     {
-                        cout << "Registro está lleno" << endl;
-                        sleep(5);
-                        nPiel = 0;
+                        sem_wait(vaciosP);
+                        sem_wait(mutexP);
+                        pRegistroSangre->bandEntrada = pRegistro->bandEntrada;
+                        pRegistroSangre->cantidad = pRegistro->cantidad;
+                        pRegistroSangre->ident = pRegistro->ident;
+                        pRegistroSangre->tipo = pRegistro->tipo;
+                        //pRegistro->cantidad = -1;
+                        enterPiel = true;
+                        sem_post(mutexP);
+                        sem_post(llenosP);
+                        break;
+                    }
+                    else
+                    {
+                        nPiel++;
                     }
                 }
-            
-                break;
+                if (nPiel >= q && !enterPiel)
+                {
+                    cout << "Registro está lleno" << endl;
+                    sleep(5);
+                    nPiel = 0;
+                }
             }
+
             pRegistro->bandEntrada = entrada.bandEntrada;
             pRegistro->cantidad = entrada.cantidad;
             pRegistro->ident = entrada.ident;
@@ -229,43 +225,42 @@ void Procesando::procesar(string nomseg, int bandeja)
         {
             sem_wait(llenos);
             sem_wait(mutex);
-            for (;;)
-            {
-                while (!enterDitritos)
-                {
-                    while (nSangre < q)
-                    {
-                        char *posnDitritos = posIDitritos + (nDitritos * sizeof(struct Entrada));
-                        struct Entrada *pRegistroSangre = (struct Entrada *)posnDitritos;
 
-                        if (pRegistroSangre->cantidad <= 0)
-                        {
-                            sem_wait(vaciosD);
-                            sem_wait(mutexD);
-                            pRegistroSangre->bandEntrada = pRegistro->bandEntrada;
-                            pRegistroSangre->cantidad = pRegistro->cantidad;
-                            pRegistroSangre->ident = pRegistro->ident;
-                            pRegistroSangre->tipo = pRegistro->tipo;
-                            //pRegistro->cantidad = -1;
-                            enterDitritos = true;
-                            sem_post(mutexD);
-                            sem_post(llenosD);
-                            break;
-                        }
-                        else
-                        {
-                            nDitritos++;
-                        }
-                    }
-                    if (nDitritos >= q && !enterDitritos)
+            while (!enterDitritos)
+            {
+                sleep(2);
+                while (nSangre < q)
+                {
+                    char *posnDitritos = posIDitritos + (nDitritos * sizeof(struct Entrada));
+                    struct Entrada *pRegistroSangre = (struct Entrada *)posnDitritos;
+
+                    if (pRegistroSangre->cantidad <= 0)
                     {
-                        cout << "Registro está lleno" << endl;
-                        sleep(5);
-                        nDitritos = 0;
+                        sem_wait(vaciosD);
+                        sem_wait(mutexD);
+                        pRegistroSangre->bandEntrada = pRegistro->bandEntrada;
+                        pRegistroSangre->cantidad = pRegistro->cantidad;
+                        pRegistroSangre->ident = pRegistro->ident;
+                        pRegistroSangre->tipo = pRegistro->tipo;
+                        //pRegistro->cantidad = -1;
+                        enterDitritos = true;
+                        sem_post(mutexD);
+                        sem_post(llenosD);
+                        break;
+                    }
+                    else
+                    {
+                        nDitritos++;
                     }
                 }
-                break;
+                if (nDitritos >= q && !enterDitritos)
+                {
+                    cout << "Registro está lleno" << endl;
+                    sleep(5);
+                    nDitritos = 0;
+                }
             }
+
             pRegistro->bandEntrada = entrada.bandEntrada;
             pRegistro->cantidad = entrada.cantidad;
             pRegistro->ident = entrada.ident;
@@ -275,99 +270,6 @@ void Procesando::procesar(string nomseg, int bandeja)
         }
         m++;
     }
-}
-
-string Procesando::procesando(string nomseg)
-{
-    string tmp = "Processing:\n\n";
-    int i, ie, oe, q;
-
-    int nSangre = 0;
-    int nPiel = 0;
-    int nDitritos = 0;
-
-    int mSangre = 0;
-    int mPiel = 0;
-    int mDitritos = 0;
-    string open = "/" + nomseg;
-    string nombreMemoriaSangre = "/" + nomseg + "Sangre";
-    string nombreMemoriaPiel = "/" + nomseg + "Piel";
-    string nombreMemoriaDitritos = "/" + nomseg + "Ditritos";
-
-    int mem = shm_open(open.c_str(), O_RDWR, 0660);
-    int memSangre = shm_open(nombreMemoriaSangre.c_str(), O_RDWR, 0660);
-    int memPiel = shm_open(nombreMemoriaPiel.c_str(), O_RDWR, 0660);
-    int memDitritos = shm_open(nombreMemoriaDitritos.c_str(), O_RDWR, 0660);
-
-    if (mem < 0)
-    {
-        cerr << "Error abriendo la memoria compartida: "
-             << errno << strerror(errno) << endl;
-        exit(1);
-    }
-
-    struct Header *header = (struct Header *)mmap(NULL, sizeof(struct Header), PROT_READ | PROT_WRITE, MAP_SHARED, mem, 0);
-    i = header->i;
-    ie = header->ie;
-    oe = header->oe;
-    q = header->q;
-
-    munmap((void *)header, sizeof(struct Header));
-
-    char *dirMemSangre = (char *)mmap(NULL, ((sizeof(struct Entrada) * q)), PROT_READ | PROT_WRITE, MAP_SHARED, memSangre, 0);
-    char *dirMemPiel = (char *)mmap(NULL, ((sizeof(struct Entrada) * q)), PROT_READ | PROT_WRITE, MAP_SHARED, memPiel, 0);
-    char *dirMemDitritos = (char *)mmap(NULL, ((sizeof(struct Entrada) * q)), PROT_READ | PROT_WRITE, MAP_SHARED, memDitritos, 0);
-
-    char *posSangre = dirMemSangre;
-    char *posPiel = dirMemPiel;
-    char *posDitritos = dirMemDitritos;
-
-    char *posISangre = (q * sizeof(struct Entrada)) + dirMemSangre;
-    mSangre = 0;
-
-    while (mSangre < q)
-    {
-        char *posnSangre = posISangre + (mSangre * sizeof(struct Entrada));
-        struct Entrada *pRegistro = (struct Entrada *)posnSangre;
-        if (pRegistro->cantidad > 0)
-        {
-            tmp += to_string(pRegistro->ident) + " " + to_string(pRegistro->bandEntrada) + " " + pRegistro->tipo + " " + to_string(pRegistro->cantidad) + "\n";
-            //cout<<pRegistro->bandEntrada<<" "<<pRegistro->cantidad<<" "<<pRegistro->tipo<<" "<<pRegistro->ident<<endl;
-        }
-        mSangre++;
-    }
-
-    char *posIPiel = (q * sizeof(struct Entrada)) + dirMemPiel;
-    mPiel = 0;
-
-    while (mPiel < q)
-    {
-        char *posnPiel = posIPiel + (mPiel * sizeof(struct Entrada));
-        struct Entrada *pRegistro = (struct Entrada *)posnPiel;
-        if (pRegistro->cantidad > 0)
-        {
-            tmp += to_string(pRegistro->ident) + " " + to_string(pRegistro->bandEntrada) + " " + pRegistro->tipo + " " + to_string(pRegistro->cantidad) + "\n";
-            //cout<<pRegistro->bandEntrada<<" "<<pRegistro->cantidad<<" "<<pRegistro->tipo<<" "<<pRegistro->ident<<endl;
-        }
-        mPiel++;
-    }
-
-    char *posIDitritos = (q * sizeof(struct Entrada)) + dirMemDitritos;
-    mDitritos = 0;
-
-    while (mDitritos < q)
-    {
-        char *posnDitritos = posIDitritos + (mDitritos * sizeof(struct Entrada));
-        struct Entrada *pRegistro = (struct Entrada *)posnDitritos;
-        if (pRegistro->cantidad > 0)
-        {
-            tmp += to_string(pRegistro->ident) + " " + to_string(pRegistro->bandEntrada) + " " + pRegistro->tipo + " " + to_string(pRegistro->cantidad) + "\n";
-            //cout<<pRegistro->bandEntrada<<" "<<pRegistro->cantidad<<" "<<pRegistro->tipo<<" "<<pRegistro->ident<<endl;
-        }
-        mDitritos++;
-    }
-
-    return tmp;
 }
 
 void Procesando::procesado(string nomseg)
@@ -463,14 +365,16 @@ void Procesando::procesado(string nomseg)
 
     char *dirsalida = dir + (sizeof(struct Entrada) * i * ie);
 
-    int temp = 0,val;
+    int temp = 0, val;
     srand(time(NULL));
 
     char *posISangre = (q * sizeof(struct Entrada)) + dirMemSangre;
     mSangre = 0;
+    int valsem;
 
     while (mSangre < q)
     {
+        sleep(2);
         char *posnSangre = posISangre + (mSangre * sizeof(struct Entrada));
         struct Entrada *pRegistrosangre = (struct Entrada *)posnSangre;
         if (pRegistrosangre->cantidad > 0)
@@ -482,23 +386,31 @@ void Procesando::procesado(string nomseg)
                 char *posnsalida = dirsalida + (sizeof(struct Salida) * temp);
                 struct Salida *registrosalida = (struct Salida *)posnsalida;
                 if (registrosalida->ident <= 0)
-                {   
+                {
                     sem_wait(vaciosSalida);
                     sem_wait(mutexSalida);
                     registrosalida->ident = pRegistrosangre->ident;
                     registrosalida->tipo = pRegistrosangre->tipo;
                     registrosalida->bandeja = pRegistrosangre->bandEntrada;
-                    val = rand()%(50+1);
-                    if(val<=15 && val>=0){
-                        registrosalida->result ='?';
-                    }else if (val>=16 && val <= 35){
-                        registrosalida->result ='N';
-                    }else if (val>=36 && val <= 50){
-                        registrosalida->result ='P';
+                    val = rand() % (50 + 1);
+                    if (val <= 15 && val >= 0)
+                    {
+                        registrosalida->result = '?';
+                    }
+                    else if (val >= 16 && val <= 35)
+                    {
+                        registrosalida->result = 'N';
+                    }
+                    else if (val >= 36 && val <= 50)
+                    {
+                        registrosalida->result = 'P';
                     }
                     for (int i = 0; i < pRegistrosangre->cantidad; i++)
                     {
-                        sem_wait(semsangre);
+                        int ran = 1+rand()%(7 - 1);
+                        for(int j =0;j<ran;j++){
+                            sem_wait(semsangre);
+                        }                        
                     }
                     pRegistrosangre->cantidad = -1;
                     sem_post(mutexSalida);
@@ -516,33 +428,49 @@ void Procesando::procesado(string nomseg)
 
     char *posIPiel = (q * sizeof(struct Entrada)) + dirMemPiel;
     mPiel = 0;
-    
+
     while (mPiel < q)
     {
+        sleep(2);
         char *posnPiel = posIPiel + (mPiel * sizeof(struct Entrada));
         struct Entrada *pRegistro = (struct Entrada *)posnPiel;
-        
+
         if (pRegistro->cantidad > 0)
         {
             sem_wait(llenosP);
             sem_wait(mutexP);
             while (temp < oe)
             {
-                char *posnsalida = dirsalida + (sizeof(struct Entrada) * temp);
-                struct Entrada *registrosalida = (struct Entrada *)posnsalida;
-                if (registrosalida->cantidad <= 0)
+                char *posnsalida = dirsalida + (sizeof(struct Salida) * temp);
+                struct Salida *registrosalida = (struct Salida *)posnsalida;
+                if (registrosalida->ident <= 0)
                 {
                     sem_wait(vaciosSalida);
-                    sem_wait(mutexSalida);   
-                    registrosalida->cantidad = pRegistro->cantidad;
+                    sem_wait(mutexSalida);
                     registrosalida->ident = pRegistro->ident;
                     registrosalida->tipo = pRegistro->tipo;
-                    registrosalida->bandEntrada = pRegistro->bandEntrada;
-                    pRegistro->cantidad = -1;
-                    for (int i = 0; i < registrosalida->cantidad; i++)
+                    registrosalida->bandeja = pRegistro->bandEntrada;
+                    val = 1 + rand() % (50 + 1);
+                    if (val <= 15 && val >= 0)
                     {
-                        sem_wait(sempiel);
+                        registrosalida->result = '?';
                     }
+                    else if (val >= 16 && val <= 35)
+                    {
+                        registrosalida->result = 'N';
+                    }
+                    else if (val >= 36 && val <= 50)
+                    {
+                        registrosalida->result = 'P';
+                    }
+                    for (int i = 0; i < pRegistro->cantidad; i++)
+                    {
+                        int ran = 5+rand()%(20-5);
+                        for(int j =0;j<ran;j++){
+                            sem_wait(sempiel);
+                        }
+                    }
+                    pRegistro->cantidad = -1;
                     sem_post(mutexSalida);
                     sem_post(llenosSalida);
                     break;
@@ -558,33 +486,49 @@ void Procesando::procesado(string nomseg)
 
     char *posIDitritos = (q * sizeof(struct Entrada)) + dirMemDitritos;
     mDitritos = 0;
-    
+
     while (mDitritos < q)
     {
+        sleep(2);
         char *posnDitritos = posIDitritos + (mDitritos * sizeof(struct Entrada));
         struct Entrada *pRegistro = (struct Entrada *)posnDitritos;
-       
+
         if (pRegistro->cantidad > 0)
         {
             sem_wait(llenosD);
             sem_wait(mutexD);
             while (temp < oe)
             {
-                char *posnsalida = dirsalida + (sizeof(struct Entrada) * temp);
-                struct Entrada *registrosalida = (struct Entrada *)posnsalida;
-                if (registrosalida->cantidad <= 0)
+                char *posnsalida = dirsalida + (sizeof(struct Salida) * temp);
+                struct Salida *registrosalida = (struct Salida *)posnsalida;
+                if (registrosalida->ident <= 0)
                 {
                     sem_wait(vaciosSalida);
                     sem_wait(mutexSalida);
-                    registrosalida->cantidad = pRegistro->cantidad;
                     registrosalida->ident = pRegistro->ident;
                     registrosalida->tipo = pRegistro->tipo;
-                    registrosalida->bandEntrada = pRegistro->bandEntrada;
-                    pRegistro->cantidad = -1;
-                    for (int i = 0; i < registrosalida->cantidad; i++)
+                    registrosalida->bandeja = pRegistro->bandEntrada;
+                    val = rand() % (50 + 1);
+                    if (val <= 15 && val >= 0)
                     {
-                        sem_wait(semditritos);
+                        registrosalida->result = '?';
                     }
+                    else if (val >= 16 && val <= 35)
+                    {
+                        registrosalida->result = 'N';
+                    }
+                    else if (val >= 36 && val <= 50)
+                    {
+                        registrosalida->result = 'P';
+                    }
+                    for (int i = 0; i < pRegistro->cantidad; i++)
+                    {
+                        int ran = 8+rand()%(25-8);
+                        for(int j =0;j<ran;j++){
+                            sem_wait(semditritos);
+                        }
+                    }
+                    pRegistro->cantidad = -1;
                     sem_post(mutexSalida);
                     sem_post(llenosSalida);
                     break;

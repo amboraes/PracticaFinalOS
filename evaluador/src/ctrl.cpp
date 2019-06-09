@@ -69,7 +69,6 @@ string Ctrl::procesando(string nomseg){
         if (pRegistro->cantidad > 0)
         {
             tmp += to_string(pRegistro->ident) + " " + to_string(pRegistro->bandEntrada) + " " + pRegistro->tipo + " " + to_string(pRegistro->cantidad) + "\n";
-            //cout<<pRegistro->bandEntrada<<" "<<pRegistro->cantidad<<" "<<pRegistro->tipo<<" "<<pRegistro->ident<<endl;
         }
         mSangre++;
     }
@@ -84,7 +83,6 @@ string Ctrl::procesando(string nomseg){
         if (pRegistro->cantidad > 0)
         {
             tmp += to_string(pRegistro->ident) + " " + to_string(pRegistro->bandEntrada) + " " + pRegistro->tipo + " " + to_string(pRegistro->cantidad) + "\n";
-            //cout<<pRegistro->bandEntrada<<" "<<pRegistro->cantidad<<" "<<pRegistro->tipo<<" "<<pRegistro->ident<<endl;
         }
         mPiel++;
     }
@@ -99,7 +97,6 @@ string Ctrl::procesando(string nomseg){
         if (pRegistro->cantidad > 0)
         {
             tmp += to_string(pRegistro->ident) + " " + to_string(pRegistro->bandEntrada) + " " + pRegistro->tipo + " " + to_string(pRegistro->cantidad) + "\n";
-            //cout<<pRegistro->bandEntrada<<" "<<pRegistro->cantidad<<" "<<pRegistro->tipo<<" "<<pRegistro->ident<<endl;
         }
         mDitritos++;
     }
@@ -128,11 +125,12 @@ string Ctrl::esperando(string nomseg){
     oe = header->oe;
     q = header->q;
     
+    cout << (void *) header << endl;
     munmap((void *) header, sizeof(struct Header));
     
     char *dir;
 
-    if ((dir = (char *)mmap(NULL,((sizeof(struct Entrada)*i*ie)+sizeof(struct Salida)+oe), PROT_READ | PROT_WRITE, MAP_SHARED, mem, 0)) == MAP_FAILED) {
+    if ((dir = (char *)mmap(NULL,((sizeof(struct Entrada)*i*ie)+sizeof(struct Salida)*oe), PROT_READ | PROT_WRITE, MAP_SHARED, mem, 0)) == MAP_FAILED) {
         cerr << "Error mapeando la memoria compartida: "
         << errno << strerror(errno) << endl;
         exit(1);
@@ -148,7 +146,7 @@ string Ctrl::esperando(string nomseg){
             char *posn = posI + (m * sizeof(struct Entrada));
             struct Entrada *pRegistro = (struct Entrada *) posn;
             //cout<<pRegistro->ident <<endl;
-            if((pRegistro->cantidad > 0) && (pRegistro->tipo != 'd')){
+            if((pRegistro->cantidad > 0) && (pRegistro->tipo != ' ')){
                 temp += to_string(pRegistro->ident) + " " + to_string(pRegistro->bandEntrada) + " " + pRegistro->tipo + " " + to_string(pRegistro->cantidad) + "\n";
             }
             m++;
@@ -272,5 +270,4 @@ void Ctrl::actualizar(string nombseg,string tipomuestra, int valormuestra){
             sem_post(piel);
         }
     }
-
 }
