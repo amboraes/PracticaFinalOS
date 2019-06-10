@@ -11,6 +11,7 @@
 #include <string>
 #include "rep.h"
 
+//Metodo para liberar la memoria
 string Rep::liberar(int tiempo, int numeroexamenes, string nomseg)
 {
     int oe, i, ie, valsem;
@@ -29,6 +30,7 @@ string Rep::liberar(int tiempo, int numeroexamenes, string nomseg)
     string nombreSemaforoVaciosSalida = nomseg + "Vsalida";
     string nombreSemaforoMutexSalida = nomseg + "Msalida";
 
+    //Se abren los semaforos
     vaciosSalida = sem_open(nombreSemaforoVaciosSalida.c_str(), 0);
     llenosSalida = sem_open(nombreSemaforoLlenosSalida.c_str(), 0);
     mutexSalida = sem_open(nombreSemaforoMutexSalida.c_str(), 0);
@@ -48,12 +50,17 @@ string Rep::liberar(int tiempo, int numeroexamenes, string nomseg)
     munmap((void *)header, sizeof(struct Header));
 
     char *dir = (char *)mmap(NULL, ((sizeof(struct Entrada) * i * ie) + (sizeof(struct Salida)*oe)), PROT_READ | PROT_WRITE, MAP_SHARED, mem, 0);
-
+    
+    //Se obtiene la primera posición de la cola de salida
     char *dirsalida = dir + (sizeof(struct Entrada) * i * ie);
     sem_getvalue(llenosSalida, &valsem);
-    int temp = 0,tmp1=0,temp2;
+    int temp = 0,tmp1=0;
+    
+    //Se itera para recorrer la cola de salida
     while (!entra)
     {
+        //Solo se entra si la cantidad de examenes en la cola es mayor o igual a la que
+        //se necesitan retirar
         if (valsem >= numeroexamenes)
         {
             while (temp < oe && tmp1<numeroexamenes)
@@ -62,14 +69,12 @@ string Rep::liberar(int tiempo, int numeroexamenes, string nomseg)
                 struct Salida *registrosalida = (struct Salida *)posnsalida;
                 if (registrosalida->ident > 0)
                 {
-                    sem_getvalue(llenosSalida,&temp2);
                     sem_wait(llenosSalida);
                     sem_wait(mutexSalida);
                     cadena += to_string(registrosalida->ident) + " " + to_string(registrosalida->bandeja) + " " + registrosalida->tipo + " " + registrosalida->result + "\n";
                     registrosalida->ident = -1;
                     sem_post(mutexSalida);
                     sem_post(vaciosSalida);
-                    sem_getvalue(llenosSalida,&temp2);
                     entra = true;
                     tmp1++;
                 }
@@ -77,6 +82,8 @@ string Rep::liberar(int tiempo, int numeroexamenes, string nomseg)
             }
             temp=0;
         }else{
+            //En caso de que no sea mayor o igual se vuelve a obtener el valor del semaforo y se 
+            //espera el tiempo dado
             sem_getvalue(llenosSalida, &valsem);
             sleep(tiempo);
         }

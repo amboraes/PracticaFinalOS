@@ -1,6 +1,7 @@
 #pragma once
 #include <cstring>
 
+//Estructura de registros de entrada
 struct Entrada {
   int bandEntrada;
   int cantidad;
@@ -8,6 +9,7 @@ struct Entrada {
   int ident;
 };
 
+//Estructura de registros de salida
 struct Salida {
   int ident;
   int bandeja;
@@ -15,6 +17,7 @@ struct Salida {
   char result;
 };
 
+//Estructura para header 
 struct Header {
   int i;
   int ie;
@@ -26,6 +29,7 @@ struct Header {
   char name[30];
 };
 
+//Estructura auxiliar para el manejo de hilos 
 struct EstructuraHilo{
   int i;
   char name[30];

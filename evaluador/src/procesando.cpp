@@ -18,7 +18,7 @@
 #include <ctime>
 
 
-
+//Metodo para procesar los registros en bandejas de entrada a las diferentes colas internas
 void Procesando::procesar(string nomseg, int bandeja)
 {
     int m = 0;
@@ -34,6 +34,8 @@ void Procesando::procesar(string nomseg, int bandeja)
     int nSangre = 0;
     int nPiel = 0;
     int nDitritos = 0;
+
+    //Apertura de las diferentes memorias compartidas 
 
     sem_t *vacios, *llenos, *mutex, *vaciosS, *llenosS, *mutexS, *vaciosP, *llenosP, *mutexP, *vaciosD, *llenosD, *mutexD;
 
@@ -89,6 +91,8 @@ void Procesando::procesar(string nomseg, int bandeja)
     char *posI = (bandeja * ie * sizeof(struct Entrada)) + dir;
     m = 0;
 
+    //Llamada a los semaforos de las bandejas de entrada e internas 
+
     string nombreSemaforoLlenosS = nomseg + nombres[0] + "Llenos";
     string nombreSemaforoVaciosS = nomseg + nombres[0] + "Vacios";
     string nombreSemaforoMutexS = nomseg + nombres[0] + "Mutex";
@@ -113,7 +117,8 @@ void Procesando::procesar(string nomseg, int bandeja)
     llenosD = sem_open(nombreSemaforoLlenosD.c_str(), 0);
     mutexD = sem_open(nombreSemaforoMutexD.c_str(), 0);
     int semval;
-
+    
+    //Se inicia el ciclo infinito que hará el recorrido por la memoria de entrada
     for (;;)
     {
         while (m < ie)
@@ -128,16 +133,17 @@ void Procesando::procesar(string nomseg, int bandeja)
             vacios = sem_open(nombreSemaforoVacios.c_str(), 0);
             llenos = sem_open(nombreSemaforoLlenos.c_str(), 0);
             mutex = sem_open(nombreSemaforoMutex.c_str(), 0);
-
+            //Si hay algun registro adentro se clasifica
             if (pRegistro->tipo == 'B')
-            {   
+            {       //Se revisa la memoria comaprtida de sangre
                     while (nSangre < q)
                     {  
                         char *posnSangre = posISangre + (nSangre * sizeof(struct Entrada));
                         struct Entrada *pRegistroSangre = (struct Entrada *)posnSangre;
-
+                        //Si se encuentra un lugar para meter el registro
                         if (pRegistroSangre->cantidad <= 0)
                         { 
+                            //Revisión semaforos (Productor-consumidor)
                             sem_wait(llenos);
                             sem_wait(mutex);
                             
@@ -164,21 +170,24 @@ void Procesando::procesar(string nomseg, int bandeja)
                     
                 
                 nSangre = 0;
+                //Se borra el registro de la memoria de entrada
                 pRegistro->bandEntrada = entrada.bandEntrada;
                 pRegistro->cantidad = entrada.cantidad;
                 pRegistro->ident = entrada.ident;
                 pRegistro->tipo = entrada.tipo;
             }
+            //Si hay algun registro adentro se clasifica
             else if (pRegistro->tipo == 'S')
-            {
+            {       //Se revisa la memoria comaprtida de piel
                     while (nPiel < q)
                     {
                         
                         char *posnPiel = posIPiel + (nPiel * sizeof(struct Entrada));
                         struct Entrada *pRegistroSangre = (struct Entrada *)posnPiel;
-
+                        //Si se encuentra un lugar para meter el registro
                         if (pRegistroSangre->cantidad <= 0)
                         {
+                            //Revisión semaforos (Productor-consumidor)
                             sem_wait(llenos);
                             sem_wait(mutex);
                             sleep(2);
@@ -204,22 +213,25 @@ void Procesando::procesar(string nomseg, int bandeja)
                     
                 
                 nPiel = 0;
+                //Se borra el registro de la memoria de entrada
                 pRegistro->bandEntrada = entrada.bandEntrada;
                 pRegistro->cantidad = entrada.cantidad;
                 pRegistro->ident = entrada.ident;
                 pRegistro->tipo = entrada.tipo;
             }
+            //Si hay algun registro adentro se clasifica
             else if (pRegistro->tipo == 'D')
-            {
+            {       //Se revisa la memoria comaprtida de ditritos
                     while (nDitritos < q)
                     {
                         
                         char *posnDitritos = posIDitritos + (nDitritos * sizeof(struct Entrada));
                         struct Entrada *pRegistroSangre = (struct Entrada *)posnDitritos;
-
+                        //Si se encuentra un lugar para meter el registro
                         if (pRegistroSangre->cantidad <= 0)
                         {
                             
+                            //Revisión semaforos (Productor-consumidor)
                             sem_wait(llenos);
                             sem_wait(mutex);
                             
@@ -245,6 +257,7 @@ void Procesando::procesar(string nomseg, int bandeja)
                     }
                     
                 nDitritos = 0;
+                //Se borra el registro de la memoria de entrada
                 pRegistro->bandEntrada = entrada.bandEntrada;
                 pRegistro->cantidad = entrada.cantidad;
                 pRegistro->ident = entrada.ident;
@@ -257,6 +270,7 @@ void Procesando::procesar(string nomseg, int bandeja)
 
 }
 
+//Metodo para procesar los examenes desde las colas intermedias hasta la de salida
 void Procesando::procesado(string nomseg, int bandeja)
 {
     int i, ie, oe, q;
@@ -277,6 +291,8 @@ void Procesando::procesado(string nomseg, int bandeja)
     string nombreSemSangre = nomseg + "Sangre";
     string nombreSemPiel = nomseg + "Piel";
     string nombreSemDitritos = nomseg + "Ditritos";
+
+    //Apertura de diferentes memorias 
 
     int mem = shm_open(open.c_str(), O_RDWR, 0660);
     int memSangre = shm_open(nombreMemoriaSangre.c_str(), O_RDWR, 0660);
@@ -305,6 +321,7 @@ void Procesando::procesado(string nomseg, int bandeja)
     string nombreSemaforoVaciosD = nomseg + nombres[2] + "Vacios";
     string nombreSemaforoMutexD = nomseg + nombres[2] + "Mutex";
 
+    //Se instancian los semaforos necesarios
     vaciosSalida = sem_open(nombreSemaforoVaciosSalida.c_str(), 0);
     llenosSalida = sem_open(nombreSemaforoLlenosSalida.c_str(), 0);
     mutexSalida = sem_open(nombreSemaforoMutexSalida.c_str(), 0);
@@ -355,25 +372,30 @@ void Procesando::procesado(string nomseg, int bandeja)
     mSangre = 0;
     int valsem;
 
+    //Condicionales para que los hilos sepan que cola interna recorrer
     if (bandeja == 0)
     {
+        //Se inicia el ciclo infinito que hará el recorrido por la memoria de sangre
         for (;;)
         {
             while (mSangre < q)
             {
                 char *posnSangre = posISangre + (mSangre * sizeof(struct Entrada));
                 struct Entrada *pRegistrosangre = (struct Entrada *)posnSangre;
+                //Si encuentra algun registro en la cola de sangre 
                 if (pRegistrosangre->cantidad > 0)
                 {
                     while (temp < oe)
                     {
                         char *posnsalida = dirsalida + (sizeof(struct Salida) * temp);
                         struct Salida *registrosalida = (struct Salida *)posnsalida;
+                        //Si encuentra algun espacio en la cola de salida para meter el regitro
                         if (registrosalida->ident <= 0)
                         {
                             sem_wait(llenosS);
                             sem_wait(mutexS);
                             val = rand() % (50 + 1);
+                            //Se verifica si el examen es valido, inconcluso o negativo
                             if (val <= 15 && val >= 0)
                             {
                                 registrosalida->result = '?';
@@ -386,6 +408,7 @@ void Procesando::procesado(string nomseg, int bandeja)
                             {
                                 registrosalida->result = 'P';
                             }
+                            //Se retira la cantdad del reactivo que especifica el examen
                             for (int i = 0; i < pRegistrosangre->cantidad; i++)
                             {
                                 int ran = 1 + rand() % (7 - 1);
@@ -394,6 +417,8 @@ void Procesando::procesado(string nomseg, int bandeja)
                                     sem_wait(semsangre);
                                 }
                             }
+
+                            //Revision de semaforos(Productor)
                             sem_wait(vaciosSalida);
                             sem_wait(mutexSalida);
                             registrosalida->ident = pRegistrosangre->ident;
@@ -420,6 +445,7 @@ void Procesando::procesado(string nomseg, int bandeja)
     mPiel = 0;
     if (bandeja == 1)
     {
+        //Se inicia el ciclo infinito que hará el recorrido por la memoria de piel
         for(;;)
         {
             while (mPiel < q)
@@ -439,6 +465,7 @@ void Procesando::procesado(string nomseg, int bandeja)
                             sem_wait(llenosP);
                             sem_wait(mutexP);
                             val = 1 + rand() % (50 + 1);
+                            //Se verifica si el examen es valido, inconcluso o negativo
                             if (val <= 15 && val >= 0)
                             {
                                 registrosalida->result = '?';
@@ -451,6 +478,7 @@ void Procesando::procesado(string nomseg, int bandeja)
                             {
                                 registrosalida->result = 'P';
                             }
+                            //Se retira la cantdad del reactivo que especifica el examen
                             for (int i = 0; i < pRegistro->cantidad; i++)
                             {
                                 int ran = 5 + rand() % (20 - 5);
@@ -486,6 +514,7 @@ void Procesando::procesado(string nomseg, int bandeja)
 
     if (bandeja == 2)
     {
+        //Se inicia el ciclo infinito que hará el recorrido por la memoria de ditritos
         for (;;)
         {
             while (mDitritos < q)
@@ -505,6 +534,7 @@ void Procesando::procesado(string nomseg, int bandeja)
                             sem_wait(llenosD);
                             sem_wait(mutexD);
                             val = rand() % (50 + 1);
+                            //Se verifica si el examen es valido, inconcluso o negativo
                             if (val <= 15 && val >= 0)
                             {
                                 registrosalida->result = '?';
@@ -517,6 +547,7 @@ void Procesando::procesado(string nomseg, int bandeja)
                             {
                                 registrosalida->result = 'P';
                             }
+                            //Se retira la cantdad del reactivo que especifica el examen
                             for (int i = 0; i < pRegistro->cantidad; i++)
                             {
                                 int ran = 8 + rand() % (25 - 8);

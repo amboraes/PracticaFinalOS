@@ -10,17 +10,19 @@
 #include "elements.h"
 #include <string>
 #include "reg.h"
-#include "bandejas.h"
 #include "procesando.h"
 
 using namespace std;
 
+//Metodo para realizar el ingreso de registros en las bandejas de entrada 
 void Reg::registrar(string nomseg, int bandeja, char tipomuestra, int cantmuestra, int ident)
 {
     int i, ie, oe, q;
     string open = "/" + nomseg;
     bool enter = false;
     int n = 0;
+
+    //Apertura de memoria 
 
     int mem = shm_open(open.c_str(), O_RDWR, 0660);
     if (mem < 0)
@@ -52,6 +54,9 @@ void Reg::registrar(string nomseg, int bandeja, char tipomuestra, int cantmuestr
              << errno << strerror(errno) << endl;
         exit(1);
     }
+
+    //Llamada a los semaforos de la bandeja a utilizar 
+
     sem_t *vacios, *llenos, *mutex;
 
     string nombreSemaforoLlenos = nomseg + "Llenos" + to_string(bandeja);
@@ -66,6 +71,7 @@ void Reg::registrar(string nomseg, int bandeja, char tipomuestra, int cantmuestr
 
     int tmp1;
 
+    //Iteracion en la bandeja de entrada llamada 
     while (n < ie)
     {
         char *posn = posI + (n * sizeof(struct Entrada));
@@ -73,6 +79,7 @@ void Reg::registrar(string nomseg, int bandeja, char tipomuestra, int cantmuestr
 
         if (pRegistro->cantidad <= 0)
         {
+            //Llamada a los semaforos (Productor)
             sem_wait(vacios);
             sem_wait(mutex);
             pRegistro->bandEntrada = entrada.bandEntrada;

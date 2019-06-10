@@ -29,6 +29,8 @@
 
 using namespace std;
 
+//PLS SEND HELP
+
 //Lectura de comandos ingresados en consola 
 
 int main(int argc, char *argv[])
@@ -96,15 +98,20 @@ int main(int argc, char *argv[])
         ifstream file;
         ofstream file2;
         int bandeja, cantmuestra,ident,verificacion;
+        //Opcion para ingresar nombre del segmento de memoria compartida 
         if(strcmp(argv[2],"-n")==0){
             nomsegmem= argv[3];
             string open = "/" + nomsegmem;
             
         }
+        //Opcion que activa el modo interactivo para registros al sistema 
         if(strcmp(argv[4], "-") == 0){
+            //prompt
             cout << "> ";
+            //Captura de argumentos pasados en el modo interactivo
             while(cin>>bandeja>>tipomuestra>>cantmuestra){
                 srand(time(NULL));
+                //Creación de la identificación aleatoria para cada registro
                 ident = rand();
                 if((tipomuestra== "B" || tipomuestra== "D" || tipomuestra== "S") && (0<cantmuestra<=5) ){
                     ident = rand()%RAND_MAX;
@@ -119,6 +126,7 @@ int main(int argc, char *argv[])
                 }
             }
         }else {
+            //Registros realizados por medio de archivos
             for (int i = 4; i < argc; i++){
                 file.open(argv[i]);
                 nomarchivo = argv[i];
@@ -145,15 +153,17 @@ int main(int argc, char *argv[])
 
         }
     }
-
+    //Comando para realizar el control del sistema 
     if(command == "ctrl"){
         Ctrl ctrl;
         string name,tmp,tipomuestra;
         int valormuestra;
         vector<string>temp;
+        //Opcion para ingresar el nombre del segmento de memoria compartida a utilizar 
         if(strcmp(argv[2],"-n")==0){
             name = argv[3];
             cout <<"> ";
+            //Modo interactivo para realizar los diferentes comando de control
             while(cin){
                 getline(cin, tmp);
                 regex ws_re("\\s+");
@@ -161,37 +171,46 @@ int main(int argc, char *argv[])
                     sregex_token_iterator(tmp.begin(), tmp.end(), ws_re, -1), {}
                 };
                 for(int i = 0; i<result.size(); i++){
-                   if(result.at(i) == "list"){
+                    // Sub-comando para la visualizacion de diferentes componentes en el sistema
+                    if(result.at(i) == "list"){
                        string resultado;
+                       //Opcion para ver los procesos que están en las cola internas en el momento del ingreso del comando 
                        if(result.at(i+1) == "processing"){
                            resultado = ctrl.procesando(name);
                            result.erase(result.begin()+1);
                            cout << resultado << endl;
                         }
-                       else if(result.at(i+1) == "waiting"){
+                        ////Opcion para ver los procesos que están en las cola de entrada en el momento del ingreso del comando 
+                        else if(result.at(i+1) == "waiting"){
                             resultado = ctrl.esperando(name);
                             result.erase(result.begin()+1);
                             cout << resultado << endl;
                         }
-                       else if(result.at(i+1) == "reported"){
+                        //Opcion para ver los procesos que están en la cola externa en el momento del ingreso del comando 
+                        else if(result.at(i+1) == "reported"){
                             resultado = ctrl.terminados(name);
                             result.erase(result.begin()+1);
                             cout << resultado << endl;
                         }
-                       else if(result.at(i+1) == "reactive"){
+                        //Opcion para ver el estado de los diferentes reactivos (B,S,D) en el momento del ingreso del comando
+                        else if(result.at(i+1) == "reactive"){
                             resultado = ctrl.reactivos(name);
                             result.erase(result.begin()+1);
                             cout << resultado << endl;
                         }
-                       else if(result.at(i+1) == "all"){
+                        //Opcion para ver el estado de todas las colas y los reactivos en el sistema 
+                        else if(result.at(i+1) == "all"){
                             resultado = ctrl.all(name);
                             result.erase(result.begin()+1);
                             cout << resultado << endl;
                         }
+                    //Sub-comando para actualizar los diferentes reactivos (B,S,D) 
                     }else if (result.at(i) == "update"){
+                        // Captura del tipo de reactivo a actualizar y cantidad que se le va a agregar a dicho reactivo
                         tipomuestra = result.at(i+1);
                         valormuestra = stoi(result.at(i+2));
                         ctrl.actualizar(name,tipomuestra,valormuestra);
+                    //Caso de error si no se ingresa un sub-comando de ctrl
                     }else if(result.at(i) != "update" && result.at(i) != "list" && !EOF){
                         cerr << "Sub comando Erroneo" << endl;
                         exit(1);
@@ -201,21 +220,32 @@ int main(int argc, char *argv[])
             }
         }
     }
-
+    //Opción para "reportar" los examenes y sacarlos de la cola de salida
     if(command == "rep"){
         string name,opcion,salida;
         int valor=0,valorsleep=0,cantexam=0;
         Rep rep;
         if(strcmp(argv[2],"-n")==0){
             name = argv[3];
+            cout << "Favor ingresar el -i o el -m seguido del valor deseado" << endl;
             cout << "> ";
             while(cin >>opcion>>valor){
+                //Opcion para saber cuanto tiempo va a esperar para revizar la cola de salida
                 if(opcion == "-i"){
                     valorsleep=valor;
+                    if(cantexam<=0)
+                    {
+                        cout << "Favor ingresar el -m seguido del valor deseado" << endl;
+                    }
                 }
-                
+                //Opción para saber cuantos examenes va a sacar de la cola de salida
                 if(opcion == "-m"){
                     cantexam=valor;
+                    if(valorsleep<=0)
+                    {
+                        cout << "Favor ingresar el -i seguido del valor deseado" << endl;
+                    }
+                    
                 }
                 if(cantexam>0 && valorsleep>0){
                     salida = rep.liberar(valorsleep,cantexam,name);
@@ -223,10 +253,12 @@ int main(int argc, char *argv[])
                     valorsleep =0;
                     cantexam=0;
                 }
+                cout << "Favor ingresar el -i o el -m seguido del valor deseado" << endl;
                 cout << "> ";
             }
         }
     }
+    //Opción para parar el sistema y eliminar la memoria compartida y semaforos
     if(command == "stop"){
         string name;
         Stop stop;

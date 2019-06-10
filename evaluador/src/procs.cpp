@@ -9,6 +9,7 @@
 
 using namespace std;
 
+//Wrapper para llamar el metodo que realiza el procesamiento de las bandejas de entrada
 void *wrapperProcesar(void *arg)
 {
     Procesando procesaraux;
@@ -18,6 +19,7 @@ void *wrapperProcesar(void *arg)
     return NULL;
 }
 
+//Wrapper para llamar el metodo que realiza el procesamiento de las bandejas intermedias
 void *wrapperProcesando(void *arg){
 
     Procesando procesaraux;
@@ -27,8 +29,10 @@ void *wrapperProcesando(void *arg){
     
 }
 
+//Metodo para la creacion de los hilos a utilizar 
 void Procs::createThreads(int i, string nomSeg)
 {
+
     pthread_t hiloEntrada[i];
     pthread_t hiloIntermedio[3];
     struct EstructuraHilo estructura;
@@ -36,6 +40,7 @@ void Procs::createThreads(int i, string nomSeg)
     strcpy(estructura.name,nomSeg.c_str());
     strcpy(estructura2.name,nomSeg.c_str());
 
+    //Creacion de los hilos que revisan las bandejas de entrada 
     for (int j = 0; j < i; j++)
     {
         estructura.i = j;
@@ -43,6 +48,7 @@ void Procs::createThreads(int i, string nomSeg)
         sleep(1);
     }
 
+    //Creacion de los hilos que procesan las colas intermedias 
     for (int k = 0; k < 3; k++){
         estructura2.i = k;
         pthread_create(&hiloIntermedio[k], NULL, wrapperProcesando, (void *) &estructura2);  

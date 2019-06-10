@@ -11,6 +11,8 @@
 using namespace std;
 
 void Stop::borrar(string memseg){
+    //Se declaran las variables necesarias para poder eliminar la memoria comparitda
+    //Y los semaforos creados anteriormente
     string open = "/" + memseg;
     string nombres[3] = {"Sangre","Piel","Ditritos"};
     int i;
@@ -33,6 +35,7 @@ void Stop::borrar(string memseg){
     string nombreSemaforoSalidaLLeno = memseg +"Msalida";
     string nombreSemaforoSalidaMutex = memseg +"Vsalida";
 
+    //A partir de acá se eliminan todos los semaforos y memorias
     for (int j=0; j<i; j++)
     {
         string nombreLlenos = nombreSemaforoLlenos + to_string(j);
@@ -52,8 +55,7 @@ void Stop::borrar(string memseg){
         sem_unlink(nombreVacios.c_str());
         sem_unlink(nombreMutex.c_str());
     }
-    string tmp = "/evaluator";
-    shm_unlink(tmp.c_str());
+
     sem_unlink(nombreSemaforoSangre.c_str());
     sem_unlink(nombreSemaforoPiel.c_str());
     sem_unlink(nombreSemaforoDitritos.c_str());
