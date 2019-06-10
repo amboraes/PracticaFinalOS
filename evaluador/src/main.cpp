@@ -24,6 +24,7 @@
 #include "rep.h"
 #include "stop.h"
 #include "procesando.h"
+#include "elements.h"
 
 
 using namespace std;
@@ -51,22 +52,24 @@ int main(int argc, char *argv[])
                 cerr <<" Argumento invalido "<<endl;
                 exit(1);
             }
-            //Opción que determina cuantas colas de entrada se van a crear
+            //Opcion que determina cuantas colas de entrada se van a crear
             if(strcmp(argv[i],"-i")==0){
                 numentradas= stoi(argv[i+1]);
                 i++;
-            //Opción que determina cuantas posiciones va a tener cada cola de entrada 
+            //Opcion que determina cuantas posiciones va a tener cada cola de entrada 
             }else if (strcmp(argv[i],"-ie")==0){
                 numeropos=stoi(argv[i+1]);
                 i++;
-            //Opción que determina cuantas posiciones va a tener la cola de salida
+            //Opcion que determina cuantas posiciones va a tener la cola de salida
             }else if (strcmp(argv[i],"-oe")==0){
                 entradasCola=stoi(argv[i+1]);
                 i++;
-            //Opción que determina el nombre 
+            //Opcion que determina el nombre del segmento de memoria a usar
             }else if (strcmp(argv[i],"-n")==0){
                 nombreSeg=argv[i+1];
                 i++;
+            //Opciones -b, -d y -s determinan la cantidad de reactivo a usar para sangre, ditritos y piel
+            //respectivamente 
             }else if (strcmp(argv[i],"-b")==0){
                 reactSangre=stoi(argv[i+1]);
                 i++;
@@ -76,6 +79,7 @@ int main(int argc, char *argv[])
             }else if (strcmp(argv[i],"-s")==0){
                 reactPiel=stoi(argv[i+1]);
                 i++;
+            //Opcion que determina el numero de posiciones que tendran las colas internas
             }else if (strcmp(argv[i],"-q")==0){
                 sizeInternas=stoi(argv[i+1]);
                 i++;
@@ -85,7 +89,7 @@ int main(int argc, char *argv[])
         init.inicializar(numentradas,numeropos,entradasCola,nombreSeg,reactSangre,reactDetritos,reactPiel,sizeInternas);
         for(;;){};
     }
-
+    //Comando que permite ingresar registros al sistema 
     if(command == "reg"){
         Reg reg;
         string nomsegmem,nomarchivo,contarchivo,tipomuestra;
@@ -95,16 +99,14 @@ int main(int argc, char *argv[])
         if(strcmp(argv[2],"-n")==0){
             nomsegmem= argv[3];
             string open = "/" + nomsegmem;
-            int mem = shm_open(nombreSeg.c_str(), O_RDWR | O_CREAT | O_EXCL, 0660);
-            struct Header *header = (struct Header *) mmap(NULL, sizeof(struct Header), PROT_READ | PROT_WRITE, MAP_SHARED, mem, 0);
-            header->i = verificacion;
+            
         }
         if(strcmp(argv[4], "-") == 0){
             cout << "> ";
             while(cin>>bandeja>>tipomuestra>>cantmuestra){
                 srand(time(NULL));
                 ident = rand();
-                if((tipomuestra== "B" || tipomuestra== "D" || tipomuestra== "S") && (0<cantmuestra<=5) && (bandeja<verificacion)){
+                if((tipomuestra== "B" || tipomuestra== "D" || tipomuestra== "S") && (0<cantmuestra<=5) ){
                     ident = rand()%RAND_MAX;
                     ids.push_back(ident);
                     reg.registrar(nomsegmem,bandeja,*tipomuestra.c_str(),cantmuestra,ident);

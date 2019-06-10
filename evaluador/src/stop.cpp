@@ -52,9 +52,8 @@ void Stop::borrar(string memseg){
         sem_unlink(nombreVacios.c_str());
         sem_unlink(nombreMutex.c_str());
     }
-    string tmp = "/evaluato",tmp2="pruebaVa";
+    string tmp = "/evaluator";
     shm_unlink(tmp.c_str());
-    sem_unlink(tmp2.c_str());
     sem_unlink(nombreSemaforoSangre.c_str());
     sem_unlink(nombreSemaforoPiel.c_str());
     sem_unlink(nombreSemaforoDitritos.c_str());

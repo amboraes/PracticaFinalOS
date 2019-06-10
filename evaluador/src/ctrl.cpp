@@ -142,7 +142,7 @@ string Ctrl::esperando(string nomseg){
         {
             char *posn = posI + (m * sizeof(struct Entrada));
             struct Entrada *pRegistro = (struct Entrada *) posn;
-            if((pRegistro->cantidad > 0) && (pRegistro->tipo != ' ')){
+            if((pRegistro->cantidad > 0) && (pRegistro->tipo != 'd')){
                 temp += to_string(pRegistro->ident) + " " + to_string(pRegistro->bandEntrada) + " " + pRegistro->tipo + " " + to_string(pRegistro->cantidad) + "\n";
             }
             m++;
