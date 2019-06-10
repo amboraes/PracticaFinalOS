@@ -65,7 +65,7 @@ Este comando permite parar a todo el sistema, borrando y devolviendo al sistema 
 $ ./evaluator stop [-n <string>]
 ````
 ## Compilación
-La practica esta compuesta de 8 archivos .cpp y 8 archivos .h todos localizados en la carpeta /src, la forma de compialción es con un Makefile. Se ejecuta el comando make en la carpeta donde este se encuentre, este generará un ejecutable llamado evaluator localizado en la carpeta src con el cual se harán todos los demas comandos explicados previamente.
+La practica esta compuesta de 7 archivos .cpp y 8 archivos .h todos localizados en la carpeta /src, la forma de compialción es con un Makefile. Se ejecuta el comando make en la carpeta donde este se encuentre, este generará un ejecutable llamado evaluator localizado en la carpeta src con el cual se harán todos los demas comandos explicados previamente.
 ````
 $ make
 $ cd src
