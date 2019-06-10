@@ -16,7 +16,7 @@ Cada uno de estas entradas tiene valores por omisión indicados en el enunciado 
 ### Comando Reg
 Este comando se encarga de registrar los diferentes exámenes puede ser usado de forma interactiva o puede pasarse un archivo .txt donde estos se encuentren.
 ````
-$ ./evaluator [-n <string>] {{<filename>} ... | - }
+$ ./evaluator reg [-n <string>] {{<filename>} ... | - }
 ````
 La opción **-** activa la forma interactiva y se verá se la siguiente forma:
 ````
