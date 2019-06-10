@@ -29,8 +29,6 @@
 
 using namespace std;
 
-//PLS SEND HELP
-
 //Lectura de comandos ingresados en consola 
 
 int main(int argc, char *argv[])
