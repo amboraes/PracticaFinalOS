@@ -1,4 +1,6 @@
 # PracticaFinalOS
+## Integrantes: María Clara Sánchez V, Juan Esteban Fonseca P y Tomás Alvarez G.
+
 * Hoy en día la gran mayoría de los exámenes médicos son realizados automáticamente por computadores, estos se encargan de recibir un conjuntode muestras y realizar los análisis correspondientes. Muchos analizadores el procesamiento de las muestras es secuencial debido a que los analizadores son diseñados únicamente con un bandeja de entrada. Esta práctica busca simular la construcción de un nuevo sistema con múltiples bandejas de entrada para procesar más exámenes por unidad de tiempo.
 ## Funcionamiento
 Esta práctica funciona con 5 comandos: init, reg, ctrl, rep y stop.
@@ -69,9 +71,3 @@ $ make
 $ cd src
 $ ./evaluator ....
 ````
-## Integrantes
-María Clara Sánchez V.
-
-Juan Esteban Fonseca P.
-
-Tomás Alvarez G.
