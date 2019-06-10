@@ -51,7 +51,7 @@ string Rep::liberar(int tiempo, int numeroexamenes, string nomseg)
 
     char *dirsalida = dir + (sizeof(struct Entrada) * i * ie);
     sem_getvalue(llenosSalida, &valsem);
-    int temp = 0,tmp1=0;
+    int temp = 0,tmp1=0,temp2;
     while (!entra)
     {
         if (valsem >= numeroexamenes)
@@ -62,12 +62,14 @@ string Rep::liberar(int tiempo, int numeroexamenes, string nomseg)
                 struct Salida *registrosalida = (struct Salida *)posnsalida;
                 if (registrosalida->ident > 0)
                 {
+                    sem_getvalue(llenosSalida,&temp2);
                     sem_wait(llenosSalida);
                     sem_wait(mutexSalida);
                     cadena += to_string(registrosalida->ident) + " " + to_string(registrosalida->bandeja) + " " + registrosalida->tipo + " " + registrosalida->result + "\n";
                     registrosalida->ident = -1;
                     sem_post(mutexSalida);
                     sem_post(vaciosSalida);
+                    sem_getvalue(llenosSalida,&temp2);
                     entra = true;
                     tmp1++;
                 }
@@ -75,6 +77,7 @@ string Rep::liberar(int tiempo, int numeroexamenes, string nomseg)
             }
             temp=0;
         }else{
+            sem_getvalue(llenosSalida, &valsem);
             sleep(tiempo);
         }
     }

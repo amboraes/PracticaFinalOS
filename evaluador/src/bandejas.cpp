@@ -13,11 +13,6 @@
 
 using namespace std;
 
-//Bandejas::Bandejas(string nombreseg){
-    //nomseg = nombreseg;
-//}
-
-//char **ban;
 
 void Bandejas::dividirMemoria(string nomseg){
     

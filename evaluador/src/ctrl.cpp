@@ -125,7 +125,6 @@ string Ctrl::esperando(string nomseg){
     oe = header->oe;
     q = header->q;
     
-    cout << (void *) header << endl;
     munmap((void *) header, sizeof(struct Header));
     
     char *dir;
@@ -135,7 +134,6 @@ string Ctrl::esperando(string nomseg){
         << errno << strerror(errno) << endl;
         exit(1);
     }
-    cout << "direccion en el waiting" << (void*) dir << endl;
     while(n < i){
         char *posI = (n*ie*sizeof(struct Entrada))+dir;
         m = 0;
@@ -144,7 +142,6 @@ string Ctrl::esperando(string nomseg){
         {
             char *posn = posI + (m * sizeof(struct Entrada));
             struct Entrada *pRegistro = (struct Entrada *) posn;
-            //cout<<pRegistro->ident <<endl;
             if((pRegistro->cantidad > 0) && (pRegistro->tipo != ' ')){
                 temp += to_string(pRegistro->ident) + " " + to_string(pRegistro->bandEntrada) + " " + pRegistro->tipo + " " + to_string(pRegistro->cantidad) + "\n";
             }
@@ -237,17 +234,15 @@ string Ctrl::reactivos(string nomseg){
 string Ctrl::all(string nomseg){
     string open = "/" + nomseg;
     int mem = shm_open(open.c_str(), O_RDWR, 0660);
-    //Procesando proc;
     string temp = "";
-    
     
     if (mem < 0){
         cerr << "Error abriendo la memoria compartida: "
 	    << errno << strerror(errno) << endl;
         exit(1);
     }
-    temp+=procesando(nomseg);
     temp+=esperando(nomseg);
+    temp+=procesando(nomseg);
     temp+=terminados(nomseg);
     temp+=reactivos(nomseg);
     return temp;

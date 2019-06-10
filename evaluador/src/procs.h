@@ -7,9 +7,7 @@ using namespace std;
 
 class Procs {
 public:
-    Procs(int i, string nomSeg);
-    Procs* getInstance(int i, string nomSeg);
-    //char * get(int i);
+    void createThreads(int i, string nomSeg);
 private:
     
 };

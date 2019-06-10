@@ -62,48 +62,31 @@ void Reg::registrar(string nomseg, int bandeja, char tipomuestra, int cantmuestr
     llenos = sem_open(nombreSemaforoLlenos.c_str(), 0);
     mutex = sem_open(nombreSemaforoMutex.c_str(), 0);
     char *pos0 = dir;
-    cout << "direccion en el reg" << (void *)dir << endl;
     char *posI = (bandeja * ie * sizeof(struct Entrada)) + dir;
-    
-    //sem_wait(vacios);
-    //sem_wait(mutex);
 
-    //while (!enter){
-    //}
-    int tmp1,tmp2,tmp3,tmp4;
-    while (!enter)
+    int tmp1;
+
+    while (n < ie)
     {
-        while (n < ie)
-        {
-            char *posn = posI + (n * sizeof(struct Entrada));
-            struct Entrada *pRegistro = (struct Entrada *)posn;
+        char *posn = posI + (n * sizeof(struct Entrada));
+        struct Entrada *pRegistro = (struct Entrada *)posn;
 
-            if (pRegistro->cantidad <= 0)
-            {
-                sem_getvalue(vacios,&tmp1);
-                cout << "valor semaforo vacio antes del wait" << endl;
-                sem_wait(vacios);
-                sem_wait(mutex);
-                cout << "entro al if de registro" << endl;
-                pRegistro->bandEntrada = entrada.bandEntrada;
-                pRegistro->cantidad = entrada.cantidad;
-                pRegistro->ident = entrada.ident;
-                pRegistro->tipo = entrada.tipo;
-                enter = true;
-                sem_post(mutex);
-                sem_post(llenos);
-                break;
-            }
-            else
-            {
-                n++;
-            }
-        }
-        if (n >= ie && !enter)
+        if (pRegistro->cantidad <= 0)
         {
-            cout << "Registro está lleno" << endl;
-            sleep(5);
-            n = 0;
+            sem_wait(vacios);
+            sem_wait(mutex);
+            pRegistro->bandEntrada = entrada.bandEntrada;
+            pRegistro->cantidad = entrada.cantidad;
+            pRegistro->ident = entrada.ident;
+            pRegistro->tipo = entrada.tipo;
+            enter = true;
+            sem_post(mutex);
+            sem_post(llenos);
+            break;
+        }
+        else
+        {
+            n++;
         }
     }
 }

@@ -15,11 +15,11 @@
 #include <sys/ipc.h>
 #include <sys/shm.h>
 #include "bandejas.h"
+#include "procs.h"
 
 using namespace std;
 
     void Init::inicializar (int i, int pos, int entradasCola, string nombreSeg,int reactSangre, int reactDetritos, int  reactPiel, int sizeInternas){
-        int j=0;
         sem_t **arraySemLlenos = new sem_t*[i];
         sem_t **arraySemVacios = new sem_t*[i];
         sem_t **arraySemMutex = new sem_t*[i];
@@ -105,7 +105,6 @@ using namespace std;
             exit(1);
         }
 
-        cout << dir << endl;
         struct Header *header = (struct Header *) dir;
         header->i = i;
         header->ie = pos;
@@ -118,11 +117,7 @@ using namespace std;
 
         munmap((void *)header, sizeof(struct Header));
 
-        //Bandejas bandejas;
-        //bandejas.dividirMemoria(nombreSeg);
+        Procs p;
+        p.createThreads(i, nombreSeg); 
 
-        close(mem);
-
-        //return dir;
-        //return EXIT_SUCCESS;*/
     }
